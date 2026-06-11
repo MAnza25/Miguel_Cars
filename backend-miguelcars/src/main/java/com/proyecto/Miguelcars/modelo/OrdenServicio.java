@@ -19,7 +19,7 @@ public class OrdenServicio {
     @Column(name = "numero_orden", unique = true)
     private String numeroOrden;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "id_checklist")
     private Checklist checklist;
 
@@ -65,6 +65,7 @@ public class OrdenServicio {
     @Column(name = "actualizado_en")
     private OffsetDateTime actualizadoEn;
 
+    @JsonIgnore  // evita LazyInitializationException al serializar con open-in-view=false
     @OneToMany(mappedBy = "ordenServicio", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<DetalleOrden> detalles;
 }
