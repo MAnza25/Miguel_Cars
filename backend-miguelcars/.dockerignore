@@ -1,0 +1,24 @@
+# Maven and Build outputs
+target/
+*.jar
+*.war
+*.ear
+
+# IDEs
+.idea/
+.vscode/
+*.iml
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Git
+.git/
+.gitignore
+
+# Frontend
+../frontend-miguelcars/
+node_modules/
