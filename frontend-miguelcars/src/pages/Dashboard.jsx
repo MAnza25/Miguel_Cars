@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer,
   PieChart, Pie, Cell, Legend,
@@ -70,7 +71,7 @@ function generarReportePDF(facturas, ordenes) {
   <style>
     * { margin:0; padding:0; box-sizing:border-box; }
     body { font-family: 'Segoe UI', sans-serif; color:#222; background:#fff; }
-    .header { background:#0d0d0d; color:#fff; padding:28px 36px; display:flex; justify-content:space-between; align-items:center; }
+    .header { background:'#0d0d0d'; color:#fff; padding:28px 36px; display:flex; justify-content:space-between; align-items:center; }
     .brand { font-size:22px; font-weight:800; letter-spacing:1px; }
     .brand span { color:#cc1f1f; }
     .sub { color:#888; font-size:13px; margin-top:4px; }
@@ -130,11 +131,19 @@ function generarReportePDF(facturas, ordenes) {
 
 /* ══════════════════════════════════════════════════════════ */
 export default function Dashboard() {
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [stats,   setStats]   = useState({ clientes:0, vehiculos:0, citas:0, ordenes:0 });
   const [ordenes, setOrdenes] = useState([]);
   const [facturas,setFacturas]= useState([]);
   const [citas,   setCitas]   = useState([]);
+  const user = JSON.parse(localStorage.getItem('user') || '{}');
+
+  const handleLogout = () => {
+    localStorage.removeItem('isAuthenticated');
+    localStorage.removeItem('user');
+    navigate('/login');
+  };
 
   useEffect(() => {
     Promise.all([getClientes(), getVehiculos(), getCitas(), getOrdenes(), getFacturas()])
@@ -182,6 +191,17 @@ export default function Dashboard() {
   return (
     <div style={{ animation:'fadeIn .3s ease', display:'flex', flexDirection:'column', gap:'20px' }}>
 
+      {/* ── Bienvenida y Usuario ───────────────────────── */}
+      <div style={S.userHeader}>
+        <div>
+          <h1 style={S.welcome}>¡Hola de nuevo, {user.nombre}! 👋</h1>
+          <p style={S.roleBadge}>{user.rol?.nombre || 'Personal'}</p>
+        </div>
+        <button onClick={handleLogout} style={S.logoutQuick}>
+          Cerrar Sesión 🚪
+        </button>
+      </div>
+
       {/* ── Acceso rápido (compacto, top) ─────────────── */}
       <div style={{ display:'flex', gap:'10px', flexWrap:'wrap', alignItems:'center' }}>
         {[
@@ -228,7 +248,7 @@ export default function Dashboard() {
             <ResponsiveContainer width="100%" height={200}>
               <AreaChart data={ventasData}>
                 <defs>
-                  <linearGradient id="colorVentas" x1="0" y1="0" x2="0" y2="1">
+                  <linearGradient id="colorVentas" x1="0" x2="0" x2="0" y2="1">
                     <stop offset="5%"  stopColor={GREEN} stopOpacity={0.3}/>
                     <stop offset="95%" stopColor={GREEN} stopOpacity={0}/>
                   </linearGradient>
@@ -326,4 +346,43 @@ const reportBtn = {
   fontSize:'13px', fontWeight:'600', cursor:'pointer',
   boxShadow:'0 2px 12px rgba(204,31,31,0.3)',
   marginLeft:'auto',
+};
+
+const S = {
+  userHeader: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    background: 'linear-gradient(90deg, #0d0d0d 0%, #141414 100%)',
+    padding: '24px 30px',
+    borderRadius: '16px',
+    border: '1px solid #1f1f1f',
+    marginBottom: '10px'
+  },
+  welcome: {
+    fontSize: '24px',
+    fontWeight: '800',
+    color: '#fff',
+    margin: 0
+  },
+  roleBadge: {
+    fontSize: '12px',
+    color: '#cc1f1f',
+    fontWeight: '700',
+    textTransform: 'uppercase',
+    letterSpacing: '1px',
+    marginTop: '4px',
+    margin: 0
+  },
+  logoutQuick: {
+    background: 'rgba(204,31,31,0.1)',
+    color: '#cc1f1f',
+    border: '1px solid rgba(204,31,31,0.2)',
+    padding: '10px 20px',
+    borderRadius: '8px',
+    fontSize: '13px',
+    fontWeight: '700',
+    cursor: 'pointer',
+    transition: 'all .2s'
+  }
 };

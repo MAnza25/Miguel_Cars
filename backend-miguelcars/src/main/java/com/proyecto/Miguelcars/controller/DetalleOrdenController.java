@@ -1,6 +1,7 @@
 package com.proyecto.Miguelcars.controller;
 
 import com.proyecto.Miguelcars.modelo.DetalleOrden;
+import com.proyecto.Miguelcars.modelo.DetalleOrdenRequest;
 import com.proyecto.Miguelcars.service.DetalleOrdenService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,7 +16,7 @@ public class DetalleOrdenController {
     @Autowired
     private DetalleOrdenService detalleOrdenService;
 
-    /** GET /api/detalle-orden?ordenId=X — lista detalles de una orden */
+    /** GET /api/detalle-orden?ordenId=X */
     @GetMapping
     public List<DetalleOrden> listar(@RequestParam(required = false) Integer ordenId) {
         if (ordenId != null) return detalleOrdenService.listarPorOrden(ordenId);
@@ -30,18 +31,29 @@ public class DetalleOrdenController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    /** POST /api/detalle-orden */
+    /**
+     * POST /api/detalle-orden
+     * Recibe { "ordenId": 5, "tipo": "SERVICIO", "descripcion": "...", "cantidad": 1, "precioUnitario": 45000 }
+     */
     @PostMapping
-    public ResponseEntity<DetalleOrden> crear(@RequestBody DetalleOrden detalle) {
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(detalleOrdenService.guardar(detalle));
+    public ResponseEntity<?> crear(@RequestBody DetalleOrdenRequest req) {
+        try {
+            DetalleOrden creado = detalleOrdenService.guardarDesdeRequest(req);
+            return ResponseEntity.status(HttpStatus.CREATED).body(creado);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     /** PUT /api/detalle-orden/{id} */
     @PutMapping("/{id}")
-    public ResponseEntity<?> actualizar(@PathVariable Integer id, @RequestBody DetalleOrden detalle) {
-        detalle.setId(id);
-        return ResponseEntity.ok(detalleOrdenService.guardar(detalle));
+    public ResponseEntity<?> actualizar(@PathVariable Integer id, @RequestBody DetalleOrdenRequest req) {
+        try {
+            DetalleOrden actualizado = detalleOrdenService.actualizarDesdeRequest(id, req);
+            return ResponseEntity.ok(actualizado);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     /** DELETE /api/detalle-orden/{id} */

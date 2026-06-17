@@ -1,21 +1,32 @@
 import { Outlet } from 'react-router-dom';
 import Sidebar from './Sidebar';
+import { ToastContainer } from '../common/Toast';
+import { useToast } from '../../hooks/useToast';
+import { createContext, useContext } from 'react';
+
+export const ToastContext = createContext(null);
+export const useAppToast = () => useContext(ToastContext);
 
 export default function Layout() {
+  const toastApi = useToast();
+
   return (
-    <div style={S.container}>
-      <Sidebar />
-      <div style={S.right}>
-        <header style={S.topbar}>
-          <div style={S.topbarAccent} />
-          <span style={S.topbarTitle}>Panel de Gestión</span>
-          <span style={S.topbarBrand}>Miguel Cars © 2026</span>
-        </header>
-        <main style={S.main}>
-          <Outlet />
-        </main>
+    <ToastContext.Provider value={toastApi}>
+      <div style={S.container}>
+        <Sidebar />
+        <div style={S.right}>
+          <header style={S.topbar}>
+            <div style={S.topbarAccent} />
+            <span style={S.topbarTitle}>Panel de Gestión</span>
+            <span style={S.topbarBrand}>Miguel Cars © 2026</span>
+          </header>
+          <main style={S.main}>
+            <Outlet />
+          </main>
+        </div>
       </div>
-    </div>
+      <ToastContainer toasts={toastApi.toasts} onClose={toastApi.remove} />
+    </ToastContext.Provider>
   );
 }
 

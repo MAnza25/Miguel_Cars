@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
 import { getClientes, createCliente, updateCliente, deleteCliente } from '../../api/clientes';
+import { useAuth } from '../../hooks/useAuth';
+import { useAppToast } from '../../components/layout/Layout';
 import PageHeader        from '../../components/common/PageHeader';
 import Table             from '../../components/common/Table';
 import Modal             from '../../components/common/Modal';
@@ -13,20 +15,35 @@ const columns = [
   { key: 'nombre',   label: 'Nombre'   },
   { key: 'telefono', label: 'Teléfono' },
   { key: 'correo',   label: 'Correo'   },
-  { key: 'activo',   label: 'Estado', render: v => v
+  { key: 'activo', label: 'Estado', render: v => v
       ? <span style={badge.green}>Activo</span>
       : <span style={badge.red}>Inactivo</span> },
 ];
 
 export default function ClientesPage() {
+  const toast = useAppToast();
+  const { can } = useAuth();
   const [data,    setData]    = useState([]);
   const [loading, setLoading] = useState(true);
   const [modal,   setModal]   = useState(false);
   const [form,    setForm]    = useState(empty);
   const [editing, setEditing] = useState(null);
+  const [search,  setSearch]  = useState('');
 
   const load = () => { setLoading(true); getClientes().then(r => setData(r.data)).finally(() => setLoading(false)); };
   useEffect(load, []);
+
+  const filteredData = data.filter(item => {
+    if (!search) return true;
+    const s = search.toLowerCase();
+    return (
+      item.id?.toString().includes(s) ||
+      item.cedula?.toLowerCase().includes(s) ||
+      item.nombre?.toLowerCase().includes(s) ||
+      item.telefono?.toLowerCase().includes(s) ||
+      item.correo?.toLowerCase().includes(s)
+    );
+  });
 
   const openNew  = () => { setForm(empty); setEditing(null); setModal(true); };
   const openEdit = row => { setForm(row); setEditing(row.id); setModal(true); };
@@ -35,25 +52,45 @@ export default function ClientesPage() {
 
   const handleSubmit = async e => {
     e.preventDefault();
-    editing ? await updateCliente(editing, form) : await createCliente(form);
-    close(); load();
+    try {
+      if (editing) await updateCliente(editing, form);
+      else         await createCliente(form);
+      toast?.success(editing ? `Cliente "${form.nombre}" actualizado` : `Cliente "${form.nombre}" registrado`);
+      close(); load();
+    } catch { toast?.error('Error al guardar el cliente'); }
   };
+
   const handleDelete = async row => {
-    if (confirm(`¿Eliminar a ${row.nombre}?`)) { await deleteCliente(row.id); load(); }
+    if (!confirm(`¿Eliminar a ${row.nombre}?`)) return;
+    try { await deleteCliente(row.id); toast?.success(`Cliente "${row.nombre}" eliminado`); load(); }
+    catch { toast?.error('No se pudo eliminar el cliente'); }
   };
 
   return (
     <div style={{ animation: 'fadeIn .3s ease' }}>
-      <PageHeader title="Clientes" onAdd={openNew} addLabel="Nuevo Cliente" />
-      {loading ? <Spinner /> : <Table columns={columns} data={data} onEdit={openEdit} onDelete={handleDelete} />}
+      <PageHeader 
+        title="Clientes" 
+        onAdd={can('CLIENTES_CREAR') ? openNew : null} 
+        addLabel="Nuevo Cliente" 
+        onSearch={setSearch}
+        searchValue={search}
+      />
+      {loading ? <Spinner /> : (
+        <Table 
+          columns={columns} 
+          data={filteredData} 
+          onEdit={can('CLIENTES_EDITAR') ? openEdit : null} 
+          onDelete={can('CLIENTES_ELIMINAR') ? handleDelete : null} 
+        />
+      )}
 
       {modal && (
         <Modal title={editing ? 'Editar Cliente' : 'Nuevo Cliente'} onClose={close}>
           <form onSubmit={handleSubmit} style={{ display:'flex', flexDirection:'column', gap:'14px' }}>
-            <FormField label="Cédula"    value={form.cedula}   onChange={set('cedula')}   required />
-            <FormField label="Nombre"    value={form.nombre}   onChange={set('nombre')}   required />
-            <FormField label="Teléfono"  value={form.telefono} onChange={set('telefono')} />
-            <FormField label="Correo"    type="email" value={form.correo} onChange={set('correo')} required />
+            <FormField label="Cédula"   value={form.cedula}   onChange={set('cedula')}   required />
+            <FormField label="Nombre"   value={form.nombre}   onChange={set('nombre')}   required />
+            <FormField label="Teléfono" value={form.telefono} onChange={set('telefono')} />
+            <FormField label="Correo"   type="email" value={form.correo} onChange={set('correo')} required />
             <FormBtn>{editing ? 'Actualizar' : 'Crear Cliente'}</FormBtn>
           </form>
         </Modal>

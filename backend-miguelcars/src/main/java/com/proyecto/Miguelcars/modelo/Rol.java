@@ -15,4 +15,7 @@ public class Rol {
     private String nombre;
 
     private String descripcion;
+
+    @Column(columnDefinition = "TEXT")
+    private String permisos;
 }

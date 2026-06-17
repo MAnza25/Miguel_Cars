@@ -25,6 +25,14 @@ public class UsuarioService {
         return usuarioRepository.findByUsuario(usuario);
     }
 
+    public Usuario login(String usuario, String password) {
+        Usuario user = usuarioRepository.findByUsuario(usuario);
+        if (user != null && user.getPasswordHash().equals(password) && user.getActivo()) {
+            return user;
+        }
+        return null;
+    }
+
     public Usuario guardar(Usuario usuario) {
         if (usuario.getActivo() == null) usuario.setActivo(true);
         if (usuario.getCreadoEn() == null) usuario.setCreadoEn(java.time.OffsetDateTime.now());

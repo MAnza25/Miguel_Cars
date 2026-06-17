@@ -1,8 +1,11 @@
 package com.proyecto.Miguelcars.controller;
 
+import com.proyecto.Miguelcars.modelo.LoginRequest;
 import com.proyecto.Miguelcars.modelo.Usuario;
 import com.proyecto.Miguelcars.service.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Optional;
@@ -13,6 +16,16 @@ public class UsuarioController {
 
     @Autowired
     private UsuarioService usuarioService;
+
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
+        Usuario usuario = usuarioService.login(loginRequest.getUsuario(), loginRequest.getPassword());
+        if (usuario != null) {
+            return ResponseEntity.ok(usuario);
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Usuario o contraseña incorrectos");
+        }
+    }
 
     @GetMapping
     public List<Usuario> listar() {

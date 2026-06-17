@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import { getVehiculos, createVehiculo, updateVehiculo, deleteVehiculo } from '../../api/vehiculos';
 import { getClientes }       from '../../api/clientes';
 import { getHistorialPlaca } from '../../api/detalleOrden';
+import { useAuth } from '../../hooks/useAuth';
+import { useAppToast } from '../../components/layout/Layout';
 import PageHeader        from '../../components/common/PageHeader';
 import Table             from '../../components/common/Table';
 import Modal             from '../../components/common/Modal';
@@ -31,12 +33,15 @@ const columns = [
 ];
 
 export default function VehiculosPage() {
+  const toast = useAppToast();
+  const { can } = useAuth();
   const [data,      setData]      = useState([]);
   const [clientes,  setClientes]  = useState([]);
   const [loading,   setLoading]   = useState(true);
   const [modal,     setModal]     = useState(false);
   const [form,      setForm]      = useState(empty);
   const [editing,   setEditing]   = useState(null);
+  const [search,    setSearch]    = useState('');
 
   // historial
   const [modalHistorial, setModalHistorial] = useState(false);
@@ -51,6 +56,19 @@ export default function VehiculosPage() {
       .finally(() => setLoading(false));
   };
   useEffect(load, []);
+
+  const filteredData = data.filter(item => {
+    if (!search) return true;
+    const s = search.toLowerCase();
+    return (
+      item.placa?.toLowerCase().includes(s) ||
+      item.cliente?.nombre?.toLowerCase().includes(s) ||
+      item.marca?.toLowerCase().includes(s) ||
+      item.modelo?.toLowerCase().includes(s) ||
+      item.color?.toLowerCase().includes(s) ||
+      item.anio?.toString().includes(s)
+    );
+  });
 
   const openNew  = () => { setForm(empty); setEditing(null); setModal(true); };
   const openEdit = row => {
@@ -69,11 +87,16 @@ export default function VehiculosPage() {
 
   const handleSubmit = async e => {
     e.preventDefault();
-    editing ? await updateVehiculo(editing, buildPayload()) : await createVehiculo(buildPayload());
-    setModal(false); load();
+    try {
+      editing ? await updateVehiculo(editing, buildPayload()) : await createVehiculo(buildPayload());
+      toast?.success(editing ? `Vehículo ${form.placa} actualizado` : `Vehículo ${form.placa} registrado`);
+      setModal(false); load();
+    } catch { toast?.error('Error al guardar el vehículo'); }
   };
   const handleDelete = async row => {
-    if (confirm(`¿Eliminar vehículo ${row.placa}?`)) { await deleteVehiculo(row.placa); load(); }
+    if (!confirm(`¿Eliminar vehículo ${row.placa}?`)) return;
+    try { await deleteVehiculo(row.placa); toast?.success(`Vehículo ${row.placa} eliminado`); load(); }
+    catch { toast?.error('No se pudo eliminar el vehículo'); }
   };
 
   // abrir historial
@@ -105,9 +128,20 @@ export default function VehiculosPage() {
 
   return (
     <div style={{ animation:'fadeIn .3s ease' }}>
-      <PageHeader title="Vehículos" onAdd={openNew} addLabel="Nuevo Vehículo" />
+      <PageHeader 
+        title="Vehículos" 
+        onAdd={can('VEHICULOS_CREAR') ? openNew : null} 
+        addLabel="Nuevo Vehículo" 
+        onSearch={setSearch}
+        searchValue={search}
+      />
       {loading ? <Spinner /> : (
-        <Table columns={[...columns, historialCol]} data={data} onEdit={openEdit} onDelete={handleDelete} />
+        <Table 
+          columns={[...columns, historialCol]} 
+          data={filteredData} 
+          onEdit={can('VEHICULOS_EDITAR') ? openEdit : null} 
+          onDelete={can('VEHICULOS_ELIMINAR') ? handleDelete : null} 
+        />
       )}
 
       {/* Modal crear/editar */}

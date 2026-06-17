@@ -14,14 +14,16 @@ public class DetalleOrden {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @JsonIgnore  // evita referencia circular DetalleOrden → OrdenServicio → DetalleOrden
+    // @JsonIgnore solo en serialización — pero necesitamos recibirlo en POST
+    // La relación se resuelve en el Service usando el ordenId del DTO
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "id_orden", nullable = false)
     private OrdenServicio ordenServicio;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private TipoDetalle tipo;  // SERVICIO o REPUESTO
+    private TipoDetalle tipo;
 
     @Column(nullable = false)
     private String descripcion;
@@ -32,8 +34,6 @@ public class DetalleOrden {
     @Column(name = "precio_unitario", nullable = false, precision = 10, scale = 2)
     private BigDecimal precioUnitario;
 
-    // subtotal calculado = cantidad * precioUnitario
-    @Column(name = "subtotal", precision = 10, scale = 2,
-            insertable = false, updatable = false)
+    @Column(name = "subtotal", precision = 10, scale = 2, insertable = false, updatable = false)
     private BigDecimal subtotal;
 }
