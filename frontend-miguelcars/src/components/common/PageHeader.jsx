@@ -1,16 +1,32 @@
-export default function PageHeader({ title, onAdd, addLabel = '+ Nuevo' }) {
+export default function PageHeader({ title, onAdd, addLabel = '+ Nuevo', onSearch, searchValue = '' }) {
   return (
     <div style={S.wrapper}>
       <div style={S.left}>
         <div style={S.accent} />
         <h1 style={S.title}>{title}</h1>
       </div>
-      {onAdd && (
-        <button style={S.btn} onClick={onAdd}>
-          <span style={S.btnPlus}>+</span>
-          {addLabel.replace('+', '').trim()}
-        </button>
-      )}
+
+      <div style={S.right}>
+        {onSearch && (
+          <div style={S.searchWrapper}>
+            <span style={S.searchIcon}>🔍</span>
+            <input
+              type="text"
+              placeholder="Buscar..."
+              value={searchValue}
+              onChange={(e) => onSearch(e.target.value)}
+              style={S.searchInput}
+            />
+          </div>
+        )}
+        
+        {onAdd && (
+          <button style={S.btn} onClick={onAdd}>
+            <span style={S.btnPlus}>+</span>
+            {addLabel.replace('+', '').trim()}
+          </button>
+        )}
+      </div>
     </div>
   );
 }
@@ -28,6 +44,33 @@ const S = {
     display: 'flex',
     alignItems: 'center',
     gap: '12px',
+  },
+  right: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '16px',
+  },
+  searchWrapper: {
+    position: 'relative',
+    display: 'flex',
+    alignItems: 'center',
+  },
+  searchIcon: {
+    position: 'absolute',
+    left: '12px',
+    fontSize: '14px',
+    color: '#444',
+  },
+  searchInput: {
+    background: '#0d0d0d',
+    border: '1px solid #2a2a2a',
+    borderRadius: '8px',
+    padding: '8px 12px 8px 36px',
+    color: '#ddd',
+    fontSize: '13px',
+    width: '240px',
+    outline: 'none',
+    transition: 'border-color .2s',
   },
   accent: {
     width: '4px',

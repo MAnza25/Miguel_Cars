@@ -21,8 +21,14 @@ public class OrdenServicioController {
         return ordenServicioService.listar();
     }
 
-    /** GET /api/ordenes/{id} */
-    @GetMapping("/{id}")
+    /** GET /api/ordenes/pendientes — órdenes pendientes de facturación */
+    @GetMapping("/pendientes")
+    public List<OrdenServicio> listarSinFactura() {
+        return ordenServicioService.listarSinFactura();
+    }
+
+    /** GET /api/ordenes/{id} — solo acepta números */
+    @GetMapping("/{id:[0-9]+}")
     public ResponseEntity<?> buscarPorId(@PathVariable Integer id) {
         return ordenServicioService.buscarPorId(id)
                 .map(ResponseEntity::ok)
@@ -49,8 +55,8 @@ public class OrdenServicioController {
         return ResponseEntity.ok(ordenServicioService.guardar(orden));
     }
 
-    /** PUT /api/ordenes/{id}/recalcular — recalcula totales */
-    @PutMapping("/{id}/recalcular")
+    /** Recalcula totales — soporta PUT y POST para evitar 405 en el frontend */
+    @RequestMapping(value = "/{id}/recalcular", method = {RequestMethod.PUT, RequestMethod.POST})
     public ResponseEntity<?> recalcular(@PathVariable Integer id) {
         return ordenServicioService.buscarPorId(id)
                 .map(o -> ResponseEntity.ok(ordenServicioService.recalcularTotales(o)))

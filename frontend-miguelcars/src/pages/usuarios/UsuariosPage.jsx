@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { getUsuarios, createUsuario, updateUsuario, deleteUsuario } from '../../api/usuarios';
 import { getRoles } from '../../api/roles';
+import { useAppToast } from '../../components/layout/Layout';
 import PageHeader        from '../../components/common/PageHeader';
 import Table             from '../../components/common/Table';
 import Modal             from '../../components/common/Modal';
@@ -9,16 +10,17 @@ import FormField, { FormBtn } from '../../components/common/FormField';
 
 const empty   = { nombre:'', usuario:'', passwordHash:'', rolId:'' };
 const columns = [
-  { key: 'id',      label: 'ID'      },
-  { key: 'nombre',  label: 'Nombre'  },
-  { key: 'usuario', label: 'Usuario' },
-  { key: 'rol',     label: 'Rol',    render: v => v?.nombre || '—' },
-  { key: 'activo',  label: 'Estado', render: v => v
+  { key:'id',      label:'ID'      },
+  { key:'nombre',  label:'Nombre'  },
+  { key:'usuario', label:'Usuario' },
+  { key:'rol',     label:'Rol',    render: v => v?.nombre || '—' },
+  { key:'activo',  label:'Estado', render: v => v
       ? <span style={badge.green}>Activo</span>
       : <span style={badge.red}>Inactivo</span> },
 ];
 
 export default function UsuariosPage() {
+  const toast = useAppToast();
   const [data,    setData]    = useState([]);
   const [roles,   setRoles]   = useState([]);
   const [loading, setLoading] = useState(true);
@@ -29,39 +31,39 @@ export default function UsuariosPage() {
   const load = () => {
     setLoading(true);
     Promise.all([getUsuarios(), getRoles()])
-      .then(([u, r]) => { setData(u.data); setRoles(r.data); })
+      .then(([u,r]) => { setData(u.data); setRoles(r.data); })
       .finally(() => setLoading(false));
   };
   useEffect(load, []);
 
   const openNew  = () => { setForm(empty); setEditing(null); setModal(true); };
   const openEdit = row => {
-    setForm({ nombre: row.nombre, usuario: row.usuario, passwordHash:'', rolId: row.rol?.id || '' });
-    setEditing(row.id);
-    setModal(true);
+    setForm({ nombre: row.nombre, usuario: row.usuario, passwordHash:'', rolId: row.rol?.id||'' });
+    setEditing(row.id); setModal(true);
   };
   const close = () => setModal(false);
-  const set   = k => e => setForm(p => ({ ...p, [k]: e.target.value }));
+  const set   = k => e => setForm(p => ({...p, [k]: e.target.value}));
 
   const buildPayload = () => ({
-    nombre: form.nombre,
-    usuario: form.usuario,
-    passwordHash: form.passwordHash,
-    activo: true,
+    nombre: form.nombre, usuario: form.usuario, passwordHash: form.passwordHash, activo: true,
     ...(form.rolId ? { rol: { id: Number(form.rolId) } } : {}),
   });
 
   const handleSubmit = async e => {
     e.preventDefault();
-    const payload = buildPayload();
-    editing ? await updateUsuario(editing, payload) : await createUsuario(payload);
-    close(); load();
+    try {
+      editing ? await updateUsuario(editing, buildPayload()) : await createUsuario(buildPayload());
+      toast?.success(editing ? `Usuario "${form.usuario}" actualizado` : `Usuario "${form.usuario}" creado`);
+      close(); load();
+    } catch { toast?.error('Error al guardar el usuario'); }
   };
   const handleDelete = async row => {
-    if (confirm(`¿Eliminar usuario "${row.usuario}"?`)) { await deleteUsuario(row.id); load(); }
+    if (!confirm(`¿Eliminar usuario "${row.usuario}"?`)) return;
+    try { await deleteUsuario(row.id); toast?.success(`Usuario "${row.usuario}" eliminado`); load(); }
+    catch { toast?.error('No se pudo eliminar el usuario'); }
   };
 
-  const rolOpts = [{ value:'', label:'Sin rol' }, ...roles.map(r => ({ value: r.id, label: r.nombre }))];
+  const rolOpts = [{ value:'', label:'Sin rol' }, ...roles.map(r=>({ value:r.id, label:r.nombre }))];
 
   return (
     <div style={{ animation:'fadeIn .3s ease' }}>
@@ -70,14 +72,11 @@ export default function UsuariosPage() {
       {modal && (
         <Modal title={editing ? 'Editar Usuario' : 'Nuevo Usuario'} onClose={close}>
           <form onSubmit={handleSubmit} style={{ display:'flex', flexDirection:'column', gap:'14px' }}>
-            <FormField label="Nombre completo"   value={form.nombre}       onChange={set('nombre')}       required />
-            <FormField label="Nombre de usuario" value={form.usuario}      onChange={set('usuario')}      required />
+            <FormField label="Nombre completo"   value={form.nombre}  onChange={set('nombre')}  required />
+            <FormField label="Nombre de usuario" value={form.usuario} onChange={set('usuario')} required />
             <FormField
               label={editing ? 'Nueva contraseña (opcional)' : 'Contraseña'}
-              type="password"
-              value={form.passwordHash}
-              onChange={set('passwordHash')}
-              required={!editing}
+              type="password" value={form.passwordHash} onChange={set('passwordHash')} required={!editing}
             />
             <FormField label="Rol" options={rolOpts} value={form.rolId} onChange={set('rolId')} />
             <FormBtn>{editing ? 'Actualizar' : 'Crear Usuario'}</FormBtn>

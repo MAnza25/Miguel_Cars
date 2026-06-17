@@ -1,13 +1,12 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { lazy, Suspense } from 'react';
 import Layout  from './components/layout/Layout';
 import Spinner from './components/common/Spinner';
+import ProtectedRoute from './components/common/ProtectedRoute';
 
 /**
  * OPTIMIZACIÓN: Lazy Loading (Code Splitting)
  * Cada página se carga solo cuando el usuario la visita.
- * Antes: un bundle único de ~721 KB
- * Después: chunks pequeños por página, carga inicial más rápida.
  */
 const Dashboard    = lazy(() => import('./pages/Dashboard'));
 const ClientesPage = lazy(() => import('./pages/clientes/ClientesPage'));
@@ -17,6 +16,7 @@ const OrdenesPage  = lazy(() => import('./pages/ordenes/OrdenesPage'));
 const FacturasPage = lazy(() => import('./pages/facturas/FacturasPage'));
 const UsuariosPage = lazy(() => import('./pages/usuarios/UsuariosPage'));
 const RolesPage    = lazy(() => import('./pages/roles/RolesPage'));
+const LoginPage    = lazy(() => import('./pages/LoginPage'));
 
 export default function App() {
   return (
@@ -28,16 +28,44 @@ export default function App() {
         </div>
       }>
         <Routes>
-          <Route element={<Layout />}>
-            <Route index            element={<Dashboard />}     />
-            <Route path="clientes"  element={<ClientesPage />}  />
-            <Route path="vehiculos" element={<VehiculosPage />} />
-            <Route path="citas"     element={<CitasPage />}     />
-            <Route path="ordenes"   element={<OrdenesPage />}   />
-            <Route path="facturas"  element={<FacturasPage />}  />
-            <Route path="usuarios"  element={<UsuariosPage />}  />
-            <Route path="roles"     element={<RolesPage />}     />
+          <Route path="/login" element={<LoginPage />} />
+          
+          <Route element={<ProtectedRoute />}>
+            <Route element={<Layout />}>
+              <Route index            element={<Dashboard />}     />
+              
+              <Route element={<ProtectedRoute permission="CLIENTES_VER" />}>
+                <Route path="clientes"  element={<ClientesPage />}  />
+              </Route>
+              
+              <Route element={<ProtectedRoute permission="VEHICULOS_VER" />}>
+                <Route path="vehiculos" element={<VehiculosPage />} />
+              </Route>
+
+              <Route element={<ProtectedRoute permission="CITAS_VER" />}>
+                <Route path="citas"     element={<CitasPage />}     />
+              </Route>
+
+              <Route element={<ProtectedRoute permission="ORDENES_VER" />}>
+                <Route path="ordenes"   element={<OrdenesPage />}   />
+              </Route>
+
+              <Route element={<ProtectedRoute permission="FACTURAS_VER" />}>
+                <Route path="facturas"  element={<FacturasPage />}  />
+              </Route>
+
+              <Route element={<ProtectedRoute permission="USUARIOS_VER" />}>
+                <Route path="usuarios"  element={<UsuariosPage />}  />
+              </Route>
+
+              <Route element={<ProtectedRoute permission="ROLES_VER" />}>
+                <Route path="roles"     element={<RolesPage />}     />
+              </Route>
+            </Route>
           </Route>
+
+          {/* Redirección por defecto */}
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Suspense>
     </BrowserRouter>
