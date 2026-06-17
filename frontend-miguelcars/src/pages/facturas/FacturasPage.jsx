@@ -11,6 +11,7 @@ import Table             from '../../components/common/Table';
 import Modal             from '../../components/common/Modal';
 import Spinner           from '../../components/common/Spinner';
 import FormField, { FormBtn } from '../../components/common/FormField';
+import ConfirmModal from '../../components/common/ConfirmModal';
 
 const empty  = { ordenId:'', usuarioId:'', total:0, subtotal:0, descuento:0 };
 const money  = { color:'#22c55e', fontWeight:'700' };
@@ -37,6 +38,7 @@ export default function FacturasPage() {
   const [detalles,    setDetalles]    = useState([]);
   const [loadingDet,  setLoadingDet]  = useState(false);
   const [editingDet,  setEditingDet]  = useState(null);
+  const [confirm,     setConfirm]     = useState({ open: false, row: null });
   const user = JSON.parse(localStorage.getItem('user') || '{}');
   
   const [search,    setSearch]    = useState('');
@@ -140,10 +142,19 @@ export default function FacturasPage() {
     }
   };
 
-  const handleDelete = async row => {
-    if (!confirm(`¿Eliminar factura ${row.numeroFactura}?`)) return;
-    try { await deleteFactura(row.id); toast?.success('Factura eliminada'); load(); }
-    catch { toast?.error('No se pudo eliminar la factura'); }
+  const handleDelete = row => {
+    setConfirm({ open: true, row });
+  };
+
+  const executeDelete = async () => {
+    const row = confirm.row;
+    try { 
+      await deleteFactura(row.id); 
+      toast?.success('Factura eliminada correctamente'); 
+      load(); 
+    } catch { 
+      toast?.error('No se pudo eliminar la factura'); 
+    }
   };
 
   const ordenOpts = [{ value:'', label:'— Seleccionar Orden Pendiente —' }, ...ordenes.map(o => ({
@@ -298,6 +309,16 @@ export default function FacturasPage() {
           </form>
         </Modal>
       )}
+
+      {confirm.open && (
+        <ConfirmModal
+          title="Eliminar Factura"
+          message={`¿Estás seguro de eliminar la factura ${confirm.row?.numeroFactura}? Esta acción liberará la orden de servicio asociada para ser facturada nuevamente.`}
+          onConfirm={executeDelete}
+          onClose={() => setConfirm({ open: false, row: null })}
+          confirmText="Eliminar Factura"
+        />
+      )}
     </div>
   );
 }
@@ -337,7 +358,7 @@ const S = {
   clearBtn: {
     background: 'transparent',
     border: 'none',
-    color: '#cc1f1f',
+    color: '#e30613',
     fontSize: '11px',
     fontWeight: '700',
     cursor: 'pointer',
@@ -364,7 +385,7 @@ const S = {
   sectionTitle: {
     fontSize: '13px',
     fontWeight: '700',
-    color: '#cc1f1f',
+    color: '#e30613',
     textTransform: 'uppercase',
     letterSpacing: '1px',
     margin: 0
@@ -414,7 +435,7 @@ const S = {
     outline: 'none'
   },
   saveBtn: { background: '#1d3a6b', color: '#3b82f6', border: 'none', borderRadius: '4px', padding: '2px 8px', cursor: 'pointer' },
-  cancelBtn: { background: '#2a1a1a', color: '#cc1f1f', border: 'none', borderRadius: '4px', padding: '2px 8px', cursor: 'pointer' },
+  cancelBtn: { background: '#2a1a1a', color: '#e30613', border: 'none', borderRadius: '4px', padding: '2px 8px', cursor: 'pointer' },
   editBtn: { background: 'transparent', color: '#444', border: 'none', cursor: 'pointer', fontSize: '14px' },
   totalsArea: {
     alignSelf: 'flex-end',
@@ -437,7 +458,7 @@ const S = {
     width: '100%',
     maxWidth: '400px',
     padding: '14px',
-    background: '#cc1f1f',
+    background: '#e30613',
     color: '#fff',
     border: 'none',
     borderRadius: '8px',

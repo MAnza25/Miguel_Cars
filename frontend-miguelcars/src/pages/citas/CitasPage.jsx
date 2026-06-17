@@ -10,11 +10,12 @@ import Table             from '../../components/common/Table';
 import Modal             from '../../components/common/Modal';
 import Spinner           from '../../components/common/Spinner';
 import FormField, { FormBtn } from '../../components/common/FormField';
+import ConfirmModal from '../../components/common/ConfirmModal';
 
 const estadoColors = {
   PROGRAMADA: { background:'rgba(59,130,246,0.12)', color:'#3b82f6' },
   ATENDIDA:   { background:'rgba(34,197,94,0.12)',  color:'#22c55e' },
-  CANCELADA:  { background:'rgba(204,31,31,0.12)',  color:'#cc1f1f' },
+  CANCELADA:  { background:'rgba(204,31,31,0.12)',  color:'#e30613' },
 };
 const empty = { fecha:'', hora:'', motivo:'', estado:'PROGRAMADA', observaciones:'', clienteId:'', placaId:'', usuarioId:'' };
 const columns = [
@@ -44,6 +45,7 @@ export default function CitasPage() {
   const [search,    setSearch]    = useState('');
   const [fEstado,   setFEstado]   = useState('');
   const [fFecha,    setFFecha]    = useState('');
+  const [confirm, setConfirm] = useState({ open: false, row: null });
 
   const load = () => {
     setLoading(true);
@@ -91,10 +93,20 @@ export default function CitasPage() {
       close(); load();
     } catch { toast?.error('Error al guardar la cita'); }
   };
-  const handleDelete = async row => {
-    if (!confirm(`¿Eliminar cita #${row.id}?`)) return;
-    try { await deleteCita(row.id); toast?.success('Cita eliminada'); load(); }
-    catch { toast?.error('No se pudo eliminar la cita'); }
+  
+  const handleDelete = row => {
+    setConfirm({ open: true, row });
+  };
+
+  const executeDelete = async () => {
+    const row = confirm.row;
+    try { 
+      await deleteCita(row.id); 
+      toast?.success(`Cita #${row.id} eliminada correctamente`); 
+      load(); 
+    } catch { 
+      toast?.error('No se pudo eliminar la cita'); 
+    }
   };
 
   const clienteOpts  = [{ value:'', label:'— Cliente —'  }, ...clientes.map(c=>({ value:c.id,    label:`${c.nombre} (${c.cedula})` }))];
@@ -154,6 +166,16 @@ export default function CitasPage() {
           </form>
         </Modal>
       )}
+
+      {confirm.open && (
+        <ConfirmModal
+          title="Eliminar Cita"
+          message={`¿Estás seguro de eliminar la cita #${confirm.row?.id}? Esta acción no se puede deshacer.`}
+          onConfirm={executeDelete}
+          onClose={() => setConfirm({ open: false, row: null })}
+          confirmText="Eliminar Cita"
+        />
+      )}
     </div>
   );
 }
@@ -193,7 +215,7 @@ const S = {
   clearBtn: {
     background: 'transparent',
     border: 'none',
-    color: '#cc1f1f',
+    color: '#e30613',
     fontSize: '11px',
     fontWeight: '700',
     cursor: 'pointer',

@@ -9,6 +9,7 @@ import Table             from '../../components/common/Table';
 import Modal             from '../../components/common/Modal';
 import Spinner           from '../../components/common/Spinner';
 import FormField, { FormBtn } from '../../components/common/FormField';
+import ConfirmModal from '../../components/common/ConfirmModal';
 
 const empty = { placa:'', marca:'', modelo:'', color:'', anio:'', kilometraje:'', clienteId:'' };
 
@@ -42,6 +43,7 @@ export default function VehiculosPage() {
   const [form,      setForm]      = useState(empty);
   const [editing,   setEditing]   = useState(null);
   const [search,    setSearch]    = useState('');
+  const [confirm, setConfirm] = useState({ open: false, row: null });
 
   // historial
   const [modalHistorial, setModalHistorial] = useState(false);
@@ -93,10 +95,20 @@ export default function VehiculosPage() {
       setModal(false); load();
     } catch { toast?.error('Error al guardar el vehículo'); }
   };
-  const handleDelete = async row => {
-    if (!confirm(`¿Eliminar vehículo ${row.placa}?`)) return;
-    try { await deleteVehiculo(row.placa); toast?.success(`Vehículo ${row.placa} eliminado`); load(); }
-    catch { toast?.error('No se pudo eliminar el vehículo'); }
+
+  const handleDelete = row => {
+    setConfirm({ open: true, row });
+  };
+
+  const executeDelete = async () => {
+    const row = confirm.row;
+    try { 
+      await deleteVehiculo(row.placa); 
+      toast?.success(`Vehículo ${row.placa} desactivado correctamente`); 
+      load(); 
+    } catch { 
+      toast?.error('No se pudo desactivar el vehículo'); 
+    }
   };
 
   // abrir historial
@@ -207,11 +219,21 @@ export default function VehiculosPage() {
           )}
         </Modal>
       )}
+
+      {confirm.open && (
+        <ConfirmModal
+          title="Desactivar Vehículo"
+          message={`¿Estás seguro de desactivar el vehículo ${confirm.row?.placa}? Se mantendrá en el historial pero no podrá ser asignado a nuevas citas u órdenes.`}
+          onConfirm={executeDelete}
+          onClose={() => setConfirm({ open: false, row: null })}
+          confirmText="Desactivar Vehículo"
+        />
+      )}
     </div>
   );
 }
 
 const badge = {
   green: { background:'rgba(34,197,94,0.12)', color:'#22c55e', padding:'3px 10px', borderRadius:'20px', fontSize:'12px', fontWeight:'600' },
-  red:   { background:'rgba(204,31,31,0.12)',  color:'#cc1f1f', padding:'3px 10px', borderRadius:'20px', fontSize:'12px', fontWeight:'600' },
+  red:   { background:'rgba(204,31,31,0.12)',  color:'#e30613', padding:'3px 10px', borderRadius:'20px', fontSize:'12px', fontWeight:'600' },
 };

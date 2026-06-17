@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 const icons = { success:'✓', error:'✕', info:'ℹ', warning:'⚠' };
 const colors = {
   success: { bg:'#0d2e1a', border:'#22c55e', icon:'#22c55e' },
-  error:   { bg:'#2e0d0d', border:'#cc1f1f', icon:'#cc1f1f' },
+  error:   { bg:'#2e0d0d', border:'#e30613', icon:'#e30613' },
   info:    { bg:'#0d1a2e', border:'#3b82f6', icon:'#3b82f6' },
   warning: { bg:'#2e1f0d', border:'#eab308', icon:'#eab308' },
 };

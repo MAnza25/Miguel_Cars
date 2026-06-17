@@ -44,6 +44,12 @@ public class ClienteService {
     }
 
     public void eliminar(Integer id) {
-        clienteRepository.deleteById(id);
+        Optional<Cliente> opt = clienteRepository.findById(id);
+        if (opt.isPresent()) {
+            Cliente cliente = opt.get();
+            cliente.setActivo(false);
+            cliente.setActualizadoEn(java.time.OffsetDateTime.now());
+            clienteRepository.save(cliente);
+        }
     }
 }

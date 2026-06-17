@@ -23,7 +23,8 @@ export default function App() {
     <BrowserRouter>
       {/* Suspense muestra el Spinner mientras se descarga el chunk */}
       <Suspense fallback={
-        <div style={{ display:'flex', alignItems:'center', justifyContent:'center', height:'100vh', background:'#141414' }}>
+        <div className="bg-honeycomb" style={{ display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', height:'100vh', gap:'24px' }}>
+          <img src="/logo.png" alt="Miguel Cars" style={{ height:100, filter:'drop-shadow(0 4px 24px rgba(227,6,19,0.4))' }} />
           <Spinner />
         </div>
       }>

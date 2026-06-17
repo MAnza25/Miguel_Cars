@@ -4,8 +4,7 @@
 export default function Modal({ title, onClose, children, width = '500px' }) {
   return (
     <div style={S.overlay} onClick={onClose}>
-      <div style={{ ...S.drawer, width, maxWidth:'96vw' }} onClick={e => e.stopPropagation()}>
-        {/* Header fijo */}
+      <div style={{ ...S.drawer, width, maxWidth: '96vw' }} onClick={e => e.stopPropagation()}>
         <div style={S.header}>
           <div style={S.headerLeft}>
             <div style={S.accent} />
@@ -13,8 +12,6 @@ export default function Modal({ title, onClose, children, width = '500px' }) {
           </div>
           <button style={S.close} onClick={onClose} title="Cerrar">✕</button>
         </div>
-
-        {/* Body con scroll */}
         <div style={S.body}>{children}</div>
       </div>
     </div>
@@ -24,35 +21,42 @@ export default function Modal({ title, onClose, children, width = '500px' }) {
 const S = {
   overlay: {
     position: 'fixed', inset: 0,
-    background: 'rgba(0,0,0,0.55)',
-    backdropFilter: 'blur(3px)',
+    background: 'rgba(0,0,0,0.65)',
+    backdropFilter: 'blur(4px)',
     zIndex: 1000,
     display: 'flex',
-    justifyContent: 'flex-end',   // ← ancla a la derecha
+    justifyContent: 'flex-end',
     alignItems: 'stretch',
   },
   drawer: {
     minHeight: '100vh',
-    background: '#141414',
-    borderLeft: '1px solid #252525',
+    background: 'var(--dark)',
+    borderLeft: '2px solid var(--red)',
     display: 'flex',
     flexDirection: 'column',
-    boxShadow: '-6px 0 40px rgba(0,0,0,0.55)',
+    boxShadow: '-8px 0 48px rgba(0,0,0,0.6)',
     animation: 'drawerSlideIn .28s cubic-bezier(0.4,0,0.2,1)',
   },
   header: {
     display: 'flex', justifyContent: 'space-between', alignItems: 'center',
     padding: '20px 24px',
-    background: '#0d0d0d',
-    borderBottom: '1px solid #1f1f1f',
+    background: 'var(--black)',
+    borderBottom: '1px solid var(--gray-border)',
     flexShrink: 0,
   },
   headerLeft: { display: 'flex', alignItems: 'center', gap: '10px' },
-  accent: { width: '3px', height: '22px', background: '#cc1f1f', borderRadius: '2px' },
-  title:  { margin: 0, fontSize: '16px', fontWeight: '700', color: '#fff', letterSpacing: '0.2px' },
+  accent: {
+    width: '3px', height: '22px',
+    background: 'linear-gradient(180deg, var(--red-bright), var(--red-dark))',
+    borderRadius: '2px',
+  },
+  title: {
+    margin: 0, fontSize: '15px', fontWeight: '800', color: 'var(--white)',
+    letterSpacing: '0.5px', textTransform: 'uppercase', fontStyle: 'italic',
+  },
   close: {
-    background: 'transparent', border: '1px solid #2a2a2a', color: '#666',
-    width: '30px', height: '30px', borderRadius: '6px', fontSize: '13px',
+    background: 'transparent', border: '1px solid var(--gray-border)', color: 'var(--gray-mid)',
+    width: '30px', height: '30px', borderRadius: 'var(--radius-sm)', fontSize: '13px',
     cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
     padding: 0, flexShrink: 0,
   },

@@ -12,9 +12,10 @@ import { getCitas }     from '../api/citas';
 import { getOrdenes }   from '../api/ordenes';
 import { getFacturas }  from '../api/facturas';
 import Spinner from '../components/common/Spinner';
+import Logo from '../components/common/Logo';
 
 /* ── paleta ─────────────────────────────────────────────── */
-const RED    = '#cc1f1f';
+const RED    = '#e30613';
 const BLUE   = '#3b82f6';
 const YELLOW = '#eab308';
 const GREEN  = '#22c55e';
@@ -71,19 +72,19 @@ function generarReportePDF(facturas, ordenes) {
   <style>
     * { margin:0; padding:0; box-sizing:border-box; }
     body { font-family: 'Segoe UI', sans-serif; color:#222; background:#fff; }
-    .header { background:'#0d0d0d'; color:#fff; padding:28px 36px; display:flex; justify-content:space-between; align-items:center; }
+    .header { background:'#0a0a0a'; color:#fff; padding:28px 36px; display:flex; justify-content:space-between; align-items:center; }
     .brand { font-size:22px; font-weight:800; letter-spacing:1px; }
-    .brand span { color:#cc1f1f; }
+    .brand span { color:#e30613; }
     .sub { color:#888; font-size:13px; margin-top:4px; }
     .fecha { color:#555; font-size:13px; }
     .content { padding:28px 36px; }
-    h2 { font-size:14px; color:#cc1f1f; letter-spacing:1.5px; text-transform:uppercase; margin:24px 0 12px; border-bottom:2px solid #cc1f1f; padding-bottom:6px; }
+    h2 { font-size:14px; color:#e30613; letter-spacing:1.5px; text-transform:uppercase; margin:24px 0 12px; border-bottom:2px solid #e30613; padding-bottom:6px; }
     .cards { display:flex; gap:16px; margin-bottom:8px; }
-    .card { flex:1; background:#f8f8f8; border-radius:8px; padding:16px 20px; border-left:4px solid #cc1f1f; }
-    .card .val { font-size:24px; font-weight:800; color:#cc1f1f; }
+    .card { flex:1; background:#f8f8f8; border-radius:8px; padding:16px 20px; border-left:4px solid #e30613; }
+    .card .val { font-size:24px; font-weight:800; color:#e30613; }
     .card .lbl { font-size:12px; color:#888; margin-top:3px; }
     table { width:100%; border-collapse:collapse; font-size:13px; }
-    th { background:#0d0d0d; color:#fff; padding:9px 12px; text-align:left; font-size:11px; text-transform:uppercase; letter-spacing:1px; }
+    th { background:#0a0a0a; color:#fff; padding:9px 12px; text-align:left; font-size:11px; text-transform:uppercase; letter-spacing:1px; }
     td { padding:8px 12px; border-bottom:1px solid #f0f0f0; }
     tr:nth-child(even) td { background:#fafafa; }
     .footer { margin-top:40px; text-align:center; color:#aaa; font-size:12px; padding:20px; border-top:1px solid #eee; }
@@ -191,15 +192,12 @@ export default function Dashboard() {
   return (
     <div style={{ animation:'fadeIn .3s ease', display:'flex', flexDirection:'column', gap:'20px' }}>
 
-      {/* ── Bienvenida y Usuario ───────────────────────── */}
       <div style={S.userHeader}>
-        <div>
+        <Logo size="sm" style={{ flexShrink: 0 }} />
+        <div style={{ flex: 1 }}>
           <h1 style={S.welcome}>¡Hola de nuevo, {user.nombre}! 👋</h1>
           <p style={S.roleBadge}>{user.rol?.nombre || 'Personal'}</p>
         </div>
-        <button onClick={handleLogout} style={S.logoutQuick}>
-          Cerrar Sesión 🚪
-        </button>
       </div>
 
       {/* ── Acceso rápido (compacto, top) ─────────────── */}
@@ -229,7 +227,7 @@ export default function Dashboard() {
           ['Citas',       stats.citas,     BLUE,   '📅'],
           ['Órdenes',     stats.ordenes,   GREEN,  '📋'],
         ].map(([label,val,color,icon]) => (
-          <div key={label} style={{ background:'#0d0d0d', border:`1px solid #1a1a1a`, borderTop:`2px solid ${color}`, borderRadius:'10px', padding:'18px' }}>
+          <div key={label} style={{ background:'#0a0a0a', border:`1px solid #1a1a1a`, borderTop:`2px solid ${color}`, borderRadius:'10px', padding:'18px' }}>
             <div style={{ display:'flex', justifyContent:'space-between', marginBottom:'8px' }}>
               <span style={{ fontSize:'20px' }}>{icon}</span>
               <span style={{ fontSize:'32px', fontWeight:'800', color, lineHeight:1 }}>{val}</span>
@@ -317,7 +315,7 @@ export default function Dashboard() {
 /* ── sub-componentes ────────────────────────────────────── */
 function ChartCard({ title, subtitle, children }) {
   return (
-    <div style={{ background:'#0d0d0d', border:'1px solid #1a1a1a', borderRadius:'12px', padding:'18px' }}>
+    <div style={{ background:'#0a0a0a', border:'1px solid #1a1a1a', borderRadius:'12px', padding:'18px' }}>
       <div style={{ marginBottom:'14px' }}>
         <div style={{ fontSize:'14px', fontWeight:'700', color:'#fff' }}>{title}</div>
         <div style={{ fontSize:'11px', color:'#555', marginTop:'2px' }}>{subtitle}</div>
@@ -333,7 +331,7 @@ function NoData() {
 /* ── estilos ────────────────────────────────────────────── */
 const quickLink = {
   display:'flex', alignItems:'center', gap:'6px',
-  background:'#0d0d0d', border:'1px solid #1f1f1f',
+  background:'#0a0a0a', border:'1px solid #1f1f1f',
   padding:'7px 14px', borderRadius:'6px',
   color:'#888', textDecoration:'none', fontSize:'13px',
   transition:'border-color .15s, color .15s',
@@ -341,23 +339,26 @@ const quickLink = {
 };
 const reportBtn = {
   display:'flex', alignItems:'center', gap:'8px',
-  background:'#cc1f1f', color:'#fff', border:'none',
-  padding:'8px 18px', borderRadius:'6px',
-  fontSize:'13px', fontWeight:'600', cursor:'pointer',
-  boxShadow:'0 2px 12px rgba(204,31,31,0.3)',
+  background:'linear-gradient(135deg, var(--red-bright), var(--red-dark))', color:'#fff', border:'none',
+  padding:'8px 18px', borderRadius:'var(--radius-sm)',
+  fontSize:'13px', fontWeight:'700', cursor:'pointer',
+  boxShadow:'var(--shadow-red)',
   marginLeft:'auto',
+  textTransform:'uppercase',
+  letterSpacing:'0.5px',
 };
 
 const S = {
   userHeader: {
     display: 'flex',
-    justifyContent: 'space-between',
     alignItems: 'center',
-    background: 'linear-gradient(90deg, #0d0d0d 0%, #141414 100%)',
+    gap: '20px',
+    background: 'linear-gradient(90deg, var(--black) 0%, var(--dark-2) 100%)',
     padding: '24px 30px',
-    borderRadius: '16px',
-    border: '1px solid #1f1f1f',
-    marginBottom: '10px'
+    borderRadius: 'var(--radius-lg)',
+    border: '1px solid var(--gray-border)',
+    borderTop: '2px solid var(--red)',
+    marginBottom: '10px',
   },
   welcome: {
     fontSize: '24px',
@@ -366,17 +367,17 @@ const S = {
     margin: 0
   },
   roleBadge: {
-    fontSize: '12px',
-    color: '#cc1f1f',
-    fontWeight: '700',
+    fontSize: '11px',
+    color: 'var(--red)',
+    fontWeight: '800',
     textTransform: 'uppercase',
-    letterSpacing: '1px',
+    letterSpacing: '1.5px',
     marginTop: '4px',
-    margin: 0
+    margin: 0,
   },
   logoutQuick: {
     background: 'rgba(204,31,31,0.1)',
-    color: '#cc1f1f',
+    color: '#e30613',
     border: '1px solid rgba(204,31,31,0.2)',
     padding: '10px 20px',
     borderRadius: '8px',
