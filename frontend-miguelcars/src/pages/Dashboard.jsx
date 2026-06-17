@@ -248,7 +248,7 @@ export default function Dashboard() {
             <ResponsiveContainer width="100%" height={200}>
               <AreaChart data={ventasData}>
                 <defs>
-                  <linearGradient id="colorVentas" x1="0" x2="0" x2="0" y2="1">
+                  <linearGradient id="colorVentas" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="5%"  stopColor={GREEN} stopOpacity={0.3}/>
                     <stop offset="95%" stopColor={GREEN} stopOpacity={0}/>
                   </linearGradient>
