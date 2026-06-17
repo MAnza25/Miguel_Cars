@@ -1,9 +1,17 @@
 import axios from 'axios';
 
-// En desarrollo Vite proxea /api → http://localhost:8080/api (definido en vite.config.js)
-// En producción (Vercel) se usa la variable de entorno VITE_API_URL
+const getBaseURL = () => {
+  const envURL = import.meta.env.VITE_API_URL;
+  if (envURL) {
+    // Si hay URL de Render, nos aseguramos de que termine en /api si no lo tiene
+    return envURL.endsWith('/api') ? envURL : `${envURL}/api`;
+  }
+  // En local usa el proxy de Vite configurado en vite.config.js
+  return '/api';
+};
+
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || '/api',
+  baseURL: getBaseURL(),
   headers: {
     'Content-Type': 'application/json',
   },
