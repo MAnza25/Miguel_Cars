@@ -1,26 +1,51 @@
 /* ============================================
    Miguel Cars — Design System
-   Paleta: Negro / Gris / Rojo / Blanco
+   Basado en identidad visual del logo oficial
+   Paleta: Negro / Plata / Rojo racing / Honeycomb
    ============================================ */
 
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,700;1,800&display=swap');
+
 :root {
-  --black:      #0d0d0d;
-  --dark:       #141414;
-  --dark-2:     #1c1c1c;
-  --dark-3:     #252525;
-  --dark-4:     #2e2e2e;
-  --gray:       #3a3a3a;
-  --gray-mid:   #555555;
-  --gray-light: #888888;
-  --gray-border:#333333;
-  --red:        #cc1f1f;
-  --red-bright: #e52222;
-  --red-dark:   #a01818;
-  --red-glow:   rgba(204,31,31,0.18);
-  --white:      #ffffff;
-  --white-90:   rgba(255,255,255,0.90);
-  --white-60:   rgba(255,255,255,0.60);
-  --white-20:   rgba(255,255,255,0.10);
+  /* Fondos */
+  --black:       #0a0a0a;
+  --dark:        #121212;
+  --dark-2:      #1a1a1a;
+  --dark-3:      #222222;
+  --dark-4:      #2a2a2a;
+  --gray:        #3a3a3a;
+  --gray-mid:    #666666;
+  --gray-light:  #999999;
+  --gray-border: #2e2e2e;
+
+  /* Rojo racing (logo) */
+  --red:         #e30613;
+  --red-bright:  #ff1a1a;
+  --red-dark:    #b0050f;
+  --red-glow:    rgba(227, 6, 19, 0.22);
+  --red-glow-lg: rgba(227, 6, 19, 0.40);
+
+  /* Plata metálico (logo) */
+  --silver:      #c8c8c8;
+  --silver-bright: #e8e8e8;
+  --silver-dark: #8a8a8a;
+  --silver-gradient: linear-gradient(135deg, #f0f0f0 0%, #b0b0b0 50%, #d8d8d8 100%);
+
+  /* Texto */
+  --white:       #ffffff;
+  --white-90:    rgba(255, 255, 255, 0.92);
+  --white-60:    rgba(255, 255, 255, 0.60);
+  --white-20:    rgba(255, 255, 255, 0.10);
+
+  /* Tipografia */
+  --font:        'Montserrat', 'Segoe UI', system-ui, sans-serif;
+
+  /* Radios y sombras */
+  --radius-sm:   6px;
+  --radius-md:   10px;
+  --radius-lg:   16px;
+  --shadow-red:  0 4px 24px rgba(227, 6, 19, 0.30);
+  --shadow-card: 0 8px 32px rgba(0, 0, 0, 0.55);
 }
 
 *, *::before, *::after {
@@ -34,31 +59,102 @@ html, body, #root {
 }
 
 body {
-  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  font-family: var(--font);
   background: var(--dark);
   color: var(--white-90);
   line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
 }
 
-/* Scrollbar */
+/* Fondo honeycomb (escudo del logo) */
+.bg-honeycomb {
+  background-color: var(--black);
+  background-image:
+    radial-gradient(ellipse 80% 60% at 50% 0%, rgba(227, 6, 19, 0.12) 0%, transparent 60%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='100' viewBox='0 0 56 100'%3E%3Cg fill='none' stroke='%23ffffff' stroke-width='0.4' opacity='0.04'%3E%3Cpath d='M28 0 L56 16 L56 48 L28 64 L0 48 L0 16 Z'/%3E%3Cpath d='M28 36 L56 52 L56 84 L28 100 L0 84 L0 52 Z'/%3E%3C/g%3E%3C/svg%3E");
+  background-size: auto, 56px 100px;
+}
+
+.brand-card {
+  background: linear-gradient(160deg, var(--dark-2) 0%, var(--dark) 100%);
+  border: 1px solid var(--gray-border);
+  border-top: 2px solid var(--red);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card), 0 0 0 1px rgba(255, 255, 255, 0.03) inset;
+}
+
+.brand-title {
+  font-family: var(--font);
+  font-weight: 900;
+  font-style: italic;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  background: var(--silver-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.brand-tagline {
+  font-family: var(--font);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: lowercase;
+  color: var(--white);
+  background: var(--black);
+  padding: 4px 12px;
+  border-radius: 2px;
+  display: inline-block;
+}
+
+.btn-primary {
+  width: 100%;
+  padding: 12px;
+  background: linear-gradient(135deg, var(--red-bright) 0%, var(--red) 50%, var(--red-dark) 100%);
+  color: var(--white);
+  border: none;
+  border-radius: var(--radius-sm);
+  font-family: var(--font);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  box-shadow: var(--shadow-red);
+  cursor: pointer;
+  transition: opacity 0.15s, transform 0.1s, box-shadow 0.15s;
+}
+
+.btn-primary:hover {
+  opacity: 0.92;
+  box-shadow: 0 6px 28px rgba(227, 6, 19, 0.45);
+}
+
+.btn-primary:active {
+  transform: scale(0.98);
+}
+
 ::-webkit-scrollbar       { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: var(--dark-2); }
 ::-webkit-scrollbar-thumb { background: var(--gray); border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--red); }
 
-/* Focus */
-input:focus, select:focus, textarea:focus, button:focus {
+input:focus, select:focus, textarea:focus, button:focus-visible {
   outline: 2px solid var(--red);
   outline-offset: 2px;
 }
 
-button { cursor: pointer; transition: opacity .15s, transform .1s; }
-button:hover  { opacity: .88; }
-button:active { transform: scale(.97); }
+button { cursor: pointer; transition: opacity 0.15s, transform 0.1s; }
+button:hover  { opacity: 0.88; }
+button:active { transform: scale(0.97); }
 
-/* Animaciones */
-@keyframes spin         { to { transform: rotate(360deg); } }
-@keyframes fadeIn       { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
-@keyframes slideIn      { from { opacity:0; transform:scale(.96); } to { opacity:1; transform:scale(1); } }
-@keyframes drawerSlideIn{ from { transform:translateX(100%); opacity:0.6; } to { transform:translateX(0); opacity:1; } }
-@keyframes toastIn      { from { opacity:0; transform:translateX(40px); } to { opacity:1; transform:translateX(0); } }
+@keyframes spin          { to { transform: rotate(360deg); } }
+@keyframes fadeIn        { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes slideIn       { from { opacity: 0; transform: scale(0.96); } to { opacity: 1; transform: scale(1); } }
+@keyframes drawerSlideIn { from { transform: translateX(100%); opacity: 0.6; } to { transform: translateX(0); opacity: 1; } }
+@keyframes toastIn       { from { opacity: 0; transform: translateX(40px); } to { opacity: 1; transform: translateX(0); } }
+@keyframes logoGlow      { 0%, 100% { filter: drop-shadow(0 4px 20px rgba(227, 6, 19, 0.35)); } 50% { filter: drop-shadow(0 6px 32px rgba(227, 6, 19, 0.55)); } }
+
+.logo-glow {
+  animation: logoGlow 3s ease-in-out infinite;
+}

@@ -6,6 +6,7 @@ import Table             from '../../components/common/Table';
 import Modal             from '../../components/common/Modal';
 import Spinner           from '../../components/common/Spinner';
 import FormField, { FormBtn } from '../../components/common/FormField';
+import ConfirmModal from '../../components/common/ConfirmModal';
 
 const PERMISSIONS_GROUPS = {
   'Módulos': [
@@ -55,6 +56,7 @@ export default function RolesPage() {
   const [form,    setForm]    = useState(empty);
   const [editing, setEditing] = useState(null);
   const [search,  setSearch]  = useState('');
+  const [confirm, setConfirm] = useState({ open: false, row: null });
 
   const load = () => { 
     setLoading(true); 
@@ -69,18 +71,32 @@ export default function RolesPage() {
   );
 
   const openNew  = () => { setForm(empty); setEditing(null); setModal(true); };
-  const openEdit = row => { setForm(row); setEditing(row.id); setModal(true); };
+  const openEdit = row => { 
+    setForm({
+      ...empty,
+      ...row,
+      nombre: row.nombre ?? '',
+      descripcion: row.descripcion ?? '',
+      permisos: row.permisos ?? ''
+    }); 
+    setEditing(row.id); 
+    setModal(true); 
+  };
   const close    = () => setModal(false);
   const set      = k => e => setForm(p => ({ ...p, [k]: e.target.value }));
 
   const togglePermiso = (permId) => {
-    const currentPerms = form.permisos ? form.permisos.split(',') : [];
+    // Convertir el string de permisos en un array limpio de valores vacíos
+    const currentPerms = form.permisos ? form.permisos.split(',').filter(p => p.trim() !== '') : [];
+    
     let newPerms;
     if (currentPerms.includes(permId)) {
       newPerms = currentPerms.filter(p => p !== permId);
     } else {
       newPerms = [...currentPerms, permId];
     }
+    
+    // Unir de nuevo sin dejar comas sueltas
     setForm({ ...form, permisos: newPerms.join(',') });
   };
 
@@ -93,22 +109,40 @@ export default function RolesPage() {
     } catch { toast?.error('Error al guardar el rol'); }
   };
 
-  const handleDelete = async row => {
+  const handleDelete = row => {
     if (row.nombre === 'Administrador') return toast?.error('No se puede eliminar el rol Administrador');
-    if (!confirm(`¿Eliminar rol "${row.nombre}"?`)) return;
-    try { await deleteRol(row.id); toast?.success(`Rol "${row.nombre}" eliminado`); load(); }
-    catch { toast?.error('No se pudo eliminar el rol'); }
+    setConfirm({ open: true, row });
+  };
+
+  const executeDelete = async () => {
+    const row = confirm.row;
+    try { 
+      await deleteRol(row.id); 
+      toast?.success(`Rol "${row.nombre}" desactivado correctamente`); 
+      load(); 
+    } catch { 
+      toast?.error('No se pudo desactivar el rol'); 
+    }
   };
 
   const columns = [
     { key: 'id',          label: 'ID'          },
     { key: 'nombre',      label: 'Nombre',     render: v => <strong style={{color:'#fff'}}>{v}</strong> },
     { key: 'descripcion', label: 'Descripción' },
-    { key: 'permisos',    label: 'Permisos',   render: v => (
-      <span style={{ fontSize:'11px', color:'#555' }}>
-        {v ? v.split(',').length : 0} asignados
-      </span>
-    )},
+    { key: 'permisos',    label: 'Accesos Asignados',   render: v => {
+      const list = v ? v.split(',').filter(p => p.trim() !== '') : [];
+      if (list.length === 0) return <span style={{color: '#444'}}>Ninguno</span>;
+      return (
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
+          <span style={{ fontSize:'11px', color:'#e30613', fontWeight: 'bold', background: 'rgba(204,31,31,0.1)', padding: '2px 6px', borderRadius: '4px' }}>
+            {list.length} {list.length === 1 ? 'permiso' : 'permisos'}
+          </span>
+          <span style={{ fontSize: '10px', color: '#666', fontStyle: 'italic' }}>
+            {list.slice(0, 2).join(', ')}{list.length > 2 ? '...' : ''}
+          </span>
+        </div>
+      );
+    }},
   ];
 
   return (
@@ -143,7 +177,7 @@ export default function RolesPage() {
                       {perms.map(p => {
                         const active = form.permisos?.split(',').includes(p.id);
                         return (
-                          <label key={p.id} style={{...S.permItem, color: active ? '#cc1f1f' : '#666'}}>
+                          <label key={p.id} style={{...S.permItem, color: active ? '#e30613' : '#666'}}>
                             <input 
                               type="checkbox" 
                               checked={active} 
@@ -158,6 +192,18 @@ export default function RolesPage() {
                   </div>
                 ))}
               </div>
+
+              <div style={S.permsSummary}>
+                <strong>Resumen de accesos:</strong> 
+                {form.permisos ? (
+                  <span style={{ marginLeft: '10px', color: '#888' }}>
+                    {form.permisos.split(',').length} permisos seleccionados. 
+                    Acceso a: {form.permisos.split(',').slice(0, 5).join(', ')}{form.permisos.split(',').length > 5 ? '...' : ''}
+                  </span>
+                ) : (
+                  <span style={{ marginLeft: '10px', color: '#e30613' }}>Ningún permiso seleccionado (el rol no tendrá accesos)</span>
+                )}
+              </div>
             </div>
 
             <div style={{ marginTop: '10px' }}>
@@ -165,6 +211,16 @@ export default function RolesPage() {
             </div>
           </form>
         </Modal>
+      )}
+
+      {confirm.open && (
+        <ConfirmModal
+          title="Desactivar Rol"
+          message={`¿Estás seguro de desactivar el rol "${confirm.row?.nombre}"? Los usuarios asignados a este rol perderán sus accesos a los módulos configurados.`}
+          onConfirm={executeDelete}
+          onClose={() => setConfirm({ open: false, row: null })}
+          confirmText="Desactivar Rol"
+        />
       )}
     </div>
   );
@@ -189,7 +245,7 @@ const S = {
   permsTitle: {
     fontSize: '13px',
     fontWeight: '700',
-    color: '#cc1f1f',
+    color: '#e30613',
     textTransform: 'uppercase',
     letterSpacing: '1px',
     marginBottom: '20px',
@@ -199,6 +255,14 @@ const S = {
     display: 'grid',
     gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))',
     gap: '20px'
+  },
+  permsSummary: {
+    marginTop: '20px',
+    padding: '15px',
+    background: 'rgba(255,255,255,0.02)',
+    borderRadius: '8px',
+    fontSize: '12px',
+    border: '1px dashed #1f1f1f'
   },
   groupCard: {
     background: '#0d0d0d',
@@ -231,7 +295,7 @@ const S = {
     transition: 'color .2s'
   },
   checkbox: {
-    accentColor: '#cc1f1f',
+    accentColor: '#e30613',
     width: '16px',
     height: '16px',
     cursor: 'pointer'

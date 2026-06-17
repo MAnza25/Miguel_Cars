@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import FormField, { FormBtn } from '../components/common/FormField';
+import FormField from '../components/common/FormField';
 import Spinner from '../components/common/Spinner';
+import Logo from '../components/common/Logo';
 import { login } from '../api/usuarios';
 
 export default function LoginPage() {
@@ -17,7 +18,6 @@ export default function LoginPage() {
 
     try {
       const response = await login(formData);
-      // Si llegamos aquí, el login fue exitoso
       const user = response.data;
       localStorage.setItem('user', JSON.stringify(user));
       localStorage.setItem('isAuthenticated', 'true');
@@ -34,14 +34,16 @@ export default function LoginPage() {
   };
 
   return (
-    <div style={S.container}>
-      <div style={S.card}>
+    <div className="bg-honeycomb" style={S.container}>
+      <div className="brand-card" style={S.card}>
         <div style={S.header}>
-          <div style={S.logoContainer}>
-            <div style={S.logoAccent} />
-            <h1 style={S.logoText}>Miguel Cars</h1>
+          <div className="logo-glow" style={S.logoWrap}>
+            <Logo size="xl" />
           </div>
-          <p style={S.subtitle}>Gestión de Taller Automotriz</p>
+          <span className="brand-tagline" style={{ marginTop: '12px' }}>
+            service innovation
+          </span>
+          <p style={S.subtitle}>Panel de gestión del taller</p>
         </div>
 
         <form onSubmit={handleSubmit} style={S.form}>
@@ -61,11 +63,9 @@ export default function LoginPage() {
 
           {error && <div style={S.error}>{error}</div>}
 
-          <div style={{ marginTop: '12px' }}>
-            <FormBtn>
-              {loading ? <Spinner size={20} /> : 'Iniciar Sesión'}
-            </FormBtn>
-          </div>
+          <button type="submit" className="btn-primary" style={{ marginTop: '12px' }} disabled={loading}>
+            {loading ? <Spinner size={20} inline /> : 'Iniciar Sesión'}
+          </button>
         </form>
 
         <footer style={S.footer}>
@@ -82,47 +82,33 @@ const S = {
     alignItems: 'center',
     justifyContent: 'center',
     minHeight: '100vh',
-    background: '#0d0d0d',
+    padding: '24px',
   },
   card: {
     width: '100%',
-    maxSize: '400px',
-    maxWidth: '400px',
-    padding: '40px',
-    background: '#141414',
-    border: '1px solid #1f1f1f',
-    borderRadius: '16px',
-    boxShadow: '0 20px 50px rgba(0,0,0,0.5)',
+    maxWidth: '420px',
+    padding: '40px 36px',
+    animation: 'fadeIn 0.4s ease',
   },
   header: {
     textAlign: 'center',
     marginBottom: '32px',
-  },
-  logoContainer: {
     display: 'flex',
+    flexDirection: 'column',
     alignItems: 'center',
+  },
+  logoWrap: {
+    display: 'flex',
     justifyContent: 'center',
-    gap: '12px',
-    marginBottom: '8px',
-  },
-  logoAccent: {
-    width: '6px',
-    height: '24px',
-    background: '#cc1f1f',
-    borderRadius: '3px',
-  },
-  logoText: {
-    fontSize: '24px',
-    fontWeight: '800',
-    color: '#fff',
-    margin: 0,
-    letterSpacing: '-0.5px',
+    marginBottom: '4px',
   },
   subtitle: {
-    fontSize: '13px',
-    color: '#666',
-    margin: 0,
-    letterSpacing: '0.5px',
+    fontSize: '12px',
+    color: 'var(--gray-mid)',
+    margin: '14px 0 0',
+    letterSpacing: '1px',
+    textTransform: 'uppercase',
+    fontWeight: '600',
   },
   form: {
     display: 'flex',
@@ -131,19 +117,20 @@ const S = {
   },
   error: {
     fontSize: '12px',
-    color: '#cc1f1f',
+    color: 'var(--red)',
     textAlign: 'center',
-    background: 'rgba(204,31,31,0.1)',
+    background: 'var(--red-glow)',
     padding: '10px',
-    borderRadius: '6px',
-    border: '1px solid rgba(204,31,31,0.2)',
+    borderRadius: 'var(--radius-sm)',
+    border: '1px solid rgba(227, 6, 19, 0.25)',
   },
   footer: {
-    marginTop: '40px',
+    marginTop: '36px',
     textAlign: 'center',
-    fontSize: '11px',
-    color: '#333',
+    fontSize: '10px',
+    color: 'var(--gray)',
     textTransform: 'uppercase',
-    letterSpacing: '1px',
+    letterSpacing: '1.5px',
+    fontWeight: '600',
   },
 };

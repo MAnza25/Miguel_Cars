@@ -13,6 +13,7 @@ import Table                  from '../../components/common/Table';
 import Modal                  from '../../components/common/Modal';
 import Spinner                from '../../components/common/Spinner';
 import FormField, { FormBtn } from '../../components/common/FormField';
+import ConfirmModal from '../../components/common/ConfirmModal';
 
 const estadoColors = {
   PENDIENTE:  { background:'rgba(156,163,175,0.15)', color:'#9ca3af' },
@@ -68,6 +69,7 @@ export default function OrdenesPage() {
   const [search,    setSearch]    = useState('');
   const [fEstado,   setFEstado]   = useState('');
   const [fFecha,    setFFecha]    = useState('');
+  const [confirm, setConfirm] = useState({ open: false, row: null });
 
   const load = () => {
     setLoading(true);
@@ -212,10 +214,19 @@ export default function OrdenesPage() {
     }
   };
 
-  const handleDelete = async row => {
-    if (!confirm(`¿Eliminar la orden ${row.numeroOrden}?`)) return;
-    try { await deleteOrden(row.id); toast?.success(`Orden ${row.numeroOrden} eliminada`); load(); }
-    catch { toast?.error('No se pudo eliminar la orden'); }
+  const handleDelete = row => {
+    setConfirm({ open: true, row });
+  };
+
+  const executeDelete = async () => {
+    const row = confirm.row;
+    try { 
+      await deleteOrden(row.id); 
+      toast?.success(`Orden ${row.numeroOrden} eliminada correctamente`); 
+      load(); 
+    } catch { 
+      toast?.error('No se pudo eliminar la orden'); 
+    }
   };
 
   const handleGenerarFactura = async row => {
@@ -293,7 +304,7 @@ export default function OrdenesPage() {
             <FormField label="Vehículo" options={vehiculoOpts} value={form.placaId}    onChange={set('placaId')}
               disabled={!form.clienteId} required />
             {form.clienteId && vehiculosFiltrados.length === 0 && (
-              <p style={{ fontSize:'12px', color:'#cc1f1f', marginTop:'-12px' }}>
+              <p style={{ fontSize:'12px', color:'#e30613', marginTop:'-12px' }}>
                 ⚠ Este cliente no tiene vehículos registrados
               </p>
             )}
@@ -376,6 +387,16 @@ export default function OrdenesPage() {
           </form>
         </Modal>
       )}
+
+      {confirm.open && (
+        <ConfirmModal
+          title="Eliminar Orden"
+          message={`¿Estás seguro de eliminar la orden ${confirm.row?.numeroOrden}? Esta acción no se puede deshacer y eliminará también sus detalles asociados.`}
+          onConfirm={executeDelete}
+          onClose={() => setConfirm({ open: false, row: null })}
+          confirmText="Eliminar Orden"
+        />
+      )}
     </div>
   );
 }
@@ -383,8 +404,8 @@ export default function OrdenesPage() {
 function SecTitle({ n, children }) {
   return (
     <div style={{ display:'flex', alignItems:'center', gap:'10px', borderBottom:'1px solid #1f1f1f', paddingBottom:'8px', marginTop:'2px' }}>
-      <span style={{ background:'#cc1f1f', color:'#fff', width:'20px', height:'20px', borderRadius:'50%', display:'flex', alignItems:'center', justifyContent:'center', fontSize:'11px', fontWeight:'800', flexShrink:0 }}>{n}</span>
-      <span style={{ fontSize:'11px', color:'#cc1f1f', fontWeight:'700', letterSpacing:'1.5px', textTransform:'uppercase' }}>{children}</span>
+      <span style={{ background:'#e30613', color:'#fff', width:'20px', height:'20px', borderRadius:'50%', display:'flex', alignItems:'center', justifyContent:'center', fontSize:'11px', fontWeight:'800', flexShrink:0 }}>{n}</span>
+      <span style={{ fontSize:'11px', color:'#e30613', fontWeight:'700', letterSpacing:'1.5px', textTransform:'uppercase' }}>{children}</span>
     </div>
   );
 }
@@ -395,7 +416,7 @@ const inputRow = { display:'flex', gap:'8px', alignItems:'flex-end', background:
 const toggleBtn= { flex:1, padding:'8px 6px', borderRadius:'6px', border:'none', cursor:'pointer', fontSize:'11px', fontWeight:'700', background:'#1a1a1a', color:'#555', transition:'all .15s' };
 const activeS  = { background:'#1d3a6b', color:'#3b82f6' };
 const activeR  = { background:'#4a3300', color:'#eab308' };
-const addBtn   = dis => ({ height:'38px', width:'38px', background: dis?'#1a1a1a':'#cc1f1f', color: dis?'#555':'#fff', border:'none', borderRadius:'6px', cursor: dis?'not-allowed':'pointer', fontSize:'22px', fontWeight:'700', opacity: dis?0.5:1, transition:'all .15s', flexShrink:0 });
+const addBtn   = dis => ({ height:'38px', width:'38px', background: dis?'#1a1a1a':'#e30613', color: dis?'#555':'#fff', border:'none', borderRadius:'6px', cursor: dis?'not-allowed':'pointer', fontSize:'22px', fontWeight:'700', opacity: dis?0.5:1, transition:'all .15s', flexShrink:0 });
 
 const S = {
   filterBar: {
@@ -432,7 +453,7 @@ const S = {
   clearBtn: {
     background: 'transparent',
     border: 'none',
-    color: '#cc1f1f',
+    color: '#e30613',
     fontSize: '11px',
     fontWeight: '700',
     cursor: 'pointer',

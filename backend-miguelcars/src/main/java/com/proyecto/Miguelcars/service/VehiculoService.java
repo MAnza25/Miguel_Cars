@@ -29,6 +29,12 @@ public class VehiculoService {
     }
 
     public void eliminar(String placa) {
-        vehiculoRepository.deleteById(placa);
+        Optional<Vehiculo> opt = vehiculoRepository.findById(placa);
+        if (opt.isPresent()) {
+            Vehiculo vehiculo = opt.get();
+            vehiculo.setActivo(false);
+            vehiculo.setActualizadoEn(java.time.OffsetDateTime.now());
+            vehiculoRepository.save(vehiculo);
+        }
     }
 }

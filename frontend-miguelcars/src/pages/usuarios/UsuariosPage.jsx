@@ -7,6 +7,7 @@ import Table             from '../../components/common/Table';
 import Modal             from '../../components/common/Modal';
 import Spinner           from '../../components/common/Spinner';
 import FormField, { FormBtn } from '../../components/common/FormField';
+import ConfirmModal from '../../components/common/ConfirmModal';
 
 const empty   = { nombre:'', usuario:'', passwordHash:'', rolId:'' };
 const columns = [
@@ -27,6 +28,7 @@ export default function UsuariosPage() {
   const [modal,   setModal]   = useState(false);
   const [form,    setForm]    = useState(empty);
   const [editing, setEditing] = useState(null);
+  const [confirm, setConfirm] = useState({ open: false, row: null });
 
   const load = () => {
     setLoading(true);
@@ -57,10 +59,21 @@ export default function UsuariosPage() {
       close(); load();
     } catch { toast?.error('Error al guardar el usuario'); }
   };
-  const handleDelete = async row => {
-    if (!confirm(`¿Eliminar usuario "${row.usuario}"?`)) return;
-    try { await deleteUsuario(row.id); toast?.success(`Usuario "${row.usuario}" eliminado`); load(); }
-    catch { toast?.error('No se pudo eliminar el usuario'); }
+
+  const handleDelete = row => {
+    if (row.usuario === 'admin') return toast?.error('No se puede desactivar el usuario administrador');
+    setConfirm({ open: true, row });
+  };
+
+  const executeDelete = async () => {
+    const row = confirm.row;
+    try { 
+      await deleteUsuario(row.id); 
+      toast?.success(`Usuario "${row.usuario}" desactivado correctamente`); 
+      load(); 
+    } catch { 
+      toast?.error('No se pudo desactivar el usuario'); 
+    }
   };
 
   const rolOpts = [{ value:'', label:'Sin rol' }, ...roles.map(r=>({ value:r.id, label:r.nombre }))];
@@ -83,11 +96,21 @@ export default function UsuariosPage() {
           </form>
         </Modal>
       )}
+
+      {confirm.open && (
+        <ConfirmModal
+          title="Desactivar Usuario"
+          message={`¿Estás seguro de desactivar a ${confirm.row?.nombre} (${confirm.row?.usuario})? El usuario ya no podrá ingresar al sistema, pero sus registros históricos se conservarán.`}
+          onConfirm={executeDelete}
+          onClose={() => setConfirm({ open: false, row: null })}
+          confirmText="Desactivar Usuario"
+        />
+      )}
     </div>
   );
 }
 
 const badge = {
   green: { background:'rgba(34,197,94,0.12)', color:'#22c55e', padding:'3px 10px', borderRadius:'20px', fontSize:'12px', fontWeight:'600' },
-  red:   { background:'rgba(204,31,31,0.12)',  color:'#cc1f1f', padding:'3px 10px', borderRadius:'20px', fontSize:'12px', fontWeight:'600' },
+  red:   { background:'rgba(204,31,31,0.12)',  color:'#e30613', padding:'3px 10px', borderRadius:'20px', fontSize:'12px', fontWeight:'600' },
 };

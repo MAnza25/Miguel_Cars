@@ -1,5 +1,6 @@
 package com.proyecto.Miguelcars.controller;
 
+import com.proyecto.Miguelcars.modelo.ChangePasswordRequest;
 import com.proyecto.Miguelcars.modelo.LoginRequest;
 import com.proyecto.Miguelcars.modelo.Usuario;
 import com.proyecto.Miguelcars.service.UsuarioService;
@@ -56,5 +57,15 @@ public class UsuarioController {
     @DeleteMapping("/{id}")
     public void eliminar(@PathVariable Integer id) {
         usuarioService.eliminar(id);
+    }
+
+    @PutMapping("/{id}/password")
+    public ResponseEntity<?> cambiarPassword(@PathVariable Integer id, @RequestBody ChangePasswordRequest request) {
+        boolean success = usuarioService.cambiarPassword(id, request.getCurrentPassword(), request.getNewPassword());
+        if (success) {
+            return ResponseEntity.ok("Contraseña actualizada correctamente");
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("La contraseña actual es incorrecta");
+        }
     }
 }

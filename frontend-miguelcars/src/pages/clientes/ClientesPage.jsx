@@ -7,6 +7,7 @@ import Table             from '../../components/common/Table';
 import Modal             from '../../components/common/Modal';
 import Spinner           from '../../components/common/Spinner';
 import FormField, { FormBtn } from '../../components/common/FormField';
+import ConfirmModal from '../../components/common/ConfirmModal';
 
 const empty   = { cedula: '', nombre: '', telefono: '', correo: '' };
 const columns = [
@@ -29,6 +30,7 @@ export default function ClientesPage() {
   const [form,    setForm]    = useState(empty);
   const [editing, setEditing] = useState(null);
   const [search,  setSearch]  = useState('');
+  const [confirm, setConfirm] = useState({ open: false, row: null });
 
   const load = () => { setLoading(true); getClientes().then(r => setData(r.data)).finally(() => setLoading(false)); };
   useEffect(load, []);
@@ -60,10 +62,19 @@ export default function ClientesPage() {
     } catch { toast?.error('Error al guardar el cliente'); }
   };
 
-  const handleDelete = async row => {
-    if (!confirm(`¿Eliminar a ${row.nombre}?`)) return;
-    try { await deleteCliente(row.id); toast?.success(`Cliente "${row.nombre}" eliminado`); load(); }
-    catch { toast?.error('No se pudo eliminar el cliente'); }
+  const handleDelete = row => {
+    setConfirm({ open: true, row });
+  };
+
+  const executeDelete = async () => {
+    const row = confirm.row;
+    try { 
+      await deleteCliente(row.id); 
+      toast?.success(`Cliente "${row.nombre}" desactivado correctamente`); 
+      load(); 
+    } catch { 
+      toast?.error('No se pudo desactivar el cliente'); 
+    }
   };
 
   return (
@@ -95,11 +106,21 @@ export default function ClientesPage() {
           </form>
         </Modal>
       )}
+
+      {confirm.open && (
+        <ConfirmModal
+          title="Desactivar Cliente"
+          message={`¿Estás seguro de desactivar a ${confirm.row?.nombre}? El registro se mantendrá en el historial legal pero no aparecerá en las listas activas del taller.`}
+          onConfirm={executeDelete}
+          onClose={() => setConfirm({ open: false, row: null })}
+          confirmText="Desactivar Cliente"
+        />
+      )}
     </div>
   );
 }
 
 const badge = {
   green: { background:'rgba(34,197,94,0.12)', color:'#22c55e', padding:'3px 10px', borderRadius:'20px', fontSize:'12px', fontWeight:'600' },
-  red:   { background:'rgba(204,31,31,0.12)',  color:'#cc1f1f', padding:'3px 10px', borderRadius:'20px', fontSize:'12px', fontWeight:'600' },
+  red:   { background:'rgba(204,31,31,0.12)',  color:'#e30613', padding:'3px 10px', borderRadius:'20px', fontSize:'12px', fontWeight:'600' },
 };

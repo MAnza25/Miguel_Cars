@@ -41,6 +41,26 @@ public class UsuarioService {
     }
 
     public void eliminar(Integer id) {
-        usuarioRepository.deleteById(id);
+        Optional<Usuario> opt = usuarioRepository.findById(id);
+        if (opt.isPresent()) {
+            Usuario user = opt.get();
+            user.setActivo(false);
+            user.setActualizadoEn(java.time.OffsetDateTime.now());
+            usuarioRepository.save(user);
+        }
+    }
+
+    public boolean cambiarPassword(Integer id, String currentPassword, String newPassword) {
+        Optional<Usuario> opt = usuarioRepository.findById(id);
+        if (opt.isPresent()) {
+            Usuario user = opt.get();
+            if (user.getPasswordHash().equals(currentPassword)) {
+                user.setPasswordHash(newPassword);
+                user.setActualizadoEn(java.time.OffsetDateTime.now());
+                usuarioRepository.save(user);
+                return true;
+            }
+        }
+        return false;
     }
 }

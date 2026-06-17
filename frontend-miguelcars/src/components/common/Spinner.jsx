@@ -1,9 +1,26 @@
-export default function Spinner() {
+export default function Spinner({ size = 44, inline = false }) {
+  const ringSize = inline ? size : 44;
+
+  if (inline) {
+    return (
+      <span
+        style={{
+          display: 'inline-block',
+          width: ringSize,
+          height: ringSize,
+          border: '2px solid rgba(255,255,255,0.2)',
+          borderTop: '2px solid #fff',
+          borderRadius: '50%',
+          animation: 'spin 0.7s linear infinite',
+          verticalAlign: 'middle',
+        }}
+      />
+    );
+  }
+
   return (
     <div style={S.wrapper}>
-      <div style={S.ring}>
-        <div style={S.spinner} />
-      </div>
+      <div style={{ ...S.spinner, width: ringSize, height: ringSize, borderWidth: '3px' }} />
       <p style={S.text}>Cargando...</p>
     </div>
   );
@@ -18,24 +35,18 @@ const S = {
     padding: '80px 20px',
     gap: '16px',
   },
-  ring: {
-    position: 'relative',
-    width: '44px',
-    height: '44px',
-  },
   spinner: {
-    width: '44px',
-    height: '44px',
-    border: '3px solid #1f1f1f',
-    borderTop: '3px solid #cc1f1f',
+    border: '3px solid var(--dark-3)',
+    borderTop: '3px solid var(--red)',
     borderRadius: '50%',
     animation: 'spin 0.7s linear infinite',
-    boxShadow: '0 0 12px rgba(204,31,31,0.2)',
+    boxShadow: '0 0 16px var(--red-glow)',
   },
   text: {
-    color: '#555',
-    fontSize: '13px',
-    letterSpacing: '1px',
+    color: 'var(--gray-mid)',
+    fontSize: '12px',
+    letterSpacing: '2px',
     textTransform: 'uppercase',
+    fontWeight: '600',
   },
 };
