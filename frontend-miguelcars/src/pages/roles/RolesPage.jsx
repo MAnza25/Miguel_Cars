@@ -161,7 +161,7 @@ export default function RolesPage() {
         <Modal title={editing ? `Editar Permisos — ${form.nombre}` : 'Nuevo Rol'} onClose={close} width="800px">
           <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
             
-            <div style={S.baseInfo}>
+            <div style={S.baseInfo} className="roles-base-info">
               <FormField label="Nombre del Rol" value={form.nombre} onChange={set('nombre')} required disabled={form.nombre === 'Administrador'} />
               <FormField label="Descripción" value={form.descripcion} onChange={set('descripcion')} />
             </div>

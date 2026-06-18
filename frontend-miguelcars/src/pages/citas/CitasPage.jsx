@@ -123,7 +123,7 @@ export default function CitasPage() {
         searchValue={search}
       />
 
-      <div style={S.filterBar}>
+      <div style={S.filterBar} className="filter-bar">
         <div style={S.filterGroup}>
           <span style={S.filterLabel}>Estado:</span>
           <select style={S.select} value={fEstado} onChange={e => setFEstado(e.target.value)}>
@@ -155,7 +155,7 @@ export default function CitasPage() {
             <FormField label="Cliente"       options={clienteOpts}  value={form.clienteId}  onChange={set('clienteId')}  required />
             <FormField label="Vehículo"      options={vehiculoOpts} value={form.placaId}    onChange={set('placaId')} />
             <FormField label="Atendido por"  options={usuarioOpts}  value={form.usuarioId}  onChange={set('usuarioId')} />
-            <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'16px', background:'rgba(255,255,255,0.02)', padding:'12px', borderRadius:'10px', border:'1px solid #1f1f1f' }}>
+            <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'16px', background:'rgba(255,255,255,0.02)', padding:'12px', borderRadius:'10px', border:'1px solid #1f1f1f' }} className="form-grid-2col">
               <FormField label="Fecha de Cita" type="date" value={form.fecha||''} onChange={set('fecha')} required />
               <FormField label="Hora Sugerida"  type="time" value={form.hora||''}  onChange={set('hora')}  required />
             </div>

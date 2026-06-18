@@ -158,3 +158,314 @@ button:active { transform: scale(0.97); }
 .logo-glow {
   animation: logoGlow 3s ease-in-out infinite;
 }
+
+/* ==========================================================================
+   Miguel Cars — Responsive & Adaptability Extensions
+   ========================================================================== */
+
+/* Toggle del menú móvil */
+.menu-toggle-btn {
+  display: none;
+  background: transparent;
+  border: 1px solid var(--gray-border);
+  color: var(--silver-bright);
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  transition: all 0.2s ease;
+  outline: none;
+}
+
+.menu-toggle-btn:hover {
+  background: var(--gray-border);
+  color: var(--white);
+}
+
+.menu-toggle-btn:active {
+  transform: scale(0.95);
+}
+
+/* Backdrop de Sidebar */
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
+  z-index: 1050;
+  animation: fadeIn 0.25s ease;
+}
+
+/* Grids comunes responsivas */
+.form-grid-2col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.checklist-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.filter-bar {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 20px;
+  background: #0d0d0d;
+  padding: 12px 20px;
+  border-radius: 10px;
+  border: 1px solid #1f1f1f;
+  align-items: center;
+}
+
+.filter-bar select,
+.filter-bar input {
+  background: #141414;
+  border: 1px solid #2a2a2a;
+  color: #ddd;
+  padding: 6px 12px;
+  border-radius: 6px;
+  fontSize: 13px;
+  outline: none;
+}
+
+/* Grids específicas del Dashboard */
+.dashboard-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+}
+
+.dashboard-charts-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.dashboard-quick-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.report-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(135deg, var(--red-bright), var(--red-dark));
+  color: #fff;
+  border: none;
+  padding: 8px 18px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: var(--shadow-red);
+  margin-left: auto;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Grids de Facturación y Roles */
+.factura-form-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 16px;
+  background: #0d0d0d;
+  padding: 20px;
+  border-radius: 12px;
+  border: 1px solid #1f1f1f;
+}
+
+.roles-base-info {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 16px;
+  background: #0d0d0d;
+  padding: 20px;
+  border-radius: 12px;
+  border: 1px solid #1f1f1f;
+}
+
+/* Fila de ingreso en Órdenes */
+.orden-fila-input-row {
+  display: flex;
+  gap: 8px;
+  align-items: flex-end;
+  background: #0d0d0d;
+  border: 1px solid #252525;
+  border-radius: 8px;
+  padding: 12px;
+}
+
+/* ==============================================
+   Media Queries para Responsividad
+   ============================================== */
+
+@media (max-width: 992px) {
+  /* Mostrar botón de hamburguesa */
+  .menu-toggle-btn {
+    display: flex;
+  }
+
+  /* Barra lateral como Drawer */
+  .app-sidebar {
+    position: fixed;
+    top: 0;
+    left: -235px;
+    height: 100vh;
+    z-index: 1100;
+    box-shadow: 5px 0 25px rgba(0, 0, 0, 0.8);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .app-sidebar.is-open {
+    transform: translateX(235px);
+  }
+
+  /* Overlay visible */
+  .sidebar-overlay.is-open {
+    display: block;
+  }
+
+  /* Dashboard grids */
+  .dashboard-stats-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+
+  .dashboard-charts-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+@media (max-width: 768px) {
+  /* Achicar paddings principales */
+  .app-main {
+    padding: 16px 12px !important;
+  }
+
+  /* PageHeader apilado */
+  .page-header-wrapper {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 14px;
+    margin-bottom: 16px;
+    padding-bottom: 14px;
+  }
+
+  .page-header-right {
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+    gap: 10px;
+  }
+
+  .page-header-right .search-wrapper {
+    width: 100%;
+  }
+
+  .page-header-right input {
+    width: 100% !important;
+  }
+
+  .page-header-right button {
+    width: 100%;
+    justify-content: center;
+  }
+
+  /* Barras de Filtros */
+  .filter-bar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+    padding: 14px 16px;
+  }
+
+  .filter-bar > div {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 6px;
+  }
+
+  .filter-bar select,
+  .filter-bar input {
+    width: 100%;
+  }
+
+  .filter-bar button {
+    width: 100%;
+    text-align: center;
+    padding: 8px 0;
+  }
+
+  /* Topbar elementos */
+  .topbar-brand {
+    display: none !important;
+  }
+
+  .topbar-title {
+    font-size: 10px !important;
+  }
+
+  /* Dashboard Quick Actions */
+  .report-btn {
+    margin-left: 0 !important;
+    width: 100%;
+    justify-content: center;
+  }
+
+  .dashboard-quick-actions a {
+    flex: 1 1 calc(50% - 10px);
+    justify-content: center;
+  }
+
+  /* Formularios complex grids */
+  .factura-form-grid {
+    grid-template-columns: 1fr !important;
+    padding: 14px;
+  }
+}
+
+@media (max-width: 576px) {
+  /* Grids de estadísticas del Dashboard */
+  .dashboard-stats-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Ocultar acentos y títulos extra de la cabecera */
+  .topbar-title,
+  .topbar-accent {
+    display: none !important;
+  }
+
+  /* Grids de formularios */
+  .form-grid-2col,
+  .checklist-grid,
+  .roles-base-info {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Fila de ingreso en Órdenes */
+  .orden-fila-input-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .orden-fila-input-row > div {
+    width: 100% !important;
+  }
+
+  .orden-fila-input-row button {
+    width: 100% !important;
+  }
+}
+

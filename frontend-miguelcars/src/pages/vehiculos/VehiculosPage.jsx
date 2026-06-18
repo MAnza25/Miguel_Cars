@@ -165,7 +165,7 @@ export default function VehiculosPage() {
             <FormField label="Marca"       value={form.marca}       onChange={set('marca')}       required />
             <FormField label="Modelo"      value={form.modelo}      onChange={set('modelo')}      required />
             <FormField label="Color"       value={form.color}       onChange={set('color')}       required />
-            <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'12px' }}>
+            <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'12px' }} className="form-grid-2col">
               <FormField label="Año"         type="number" value={form.anio}        onChange={set('anio')}        required />
               <FormField label="Kilometraje" type="number" value={form.kilometraje} onChange={set('kilometraje')} required />
             </div>

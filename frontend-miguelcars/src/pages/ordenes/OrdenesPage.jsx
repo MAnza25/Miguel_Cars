@@ -270,7 +270,7 @@ export default function OrdenesPage() {
         searchValue={search}
       />
 
-      <div style={S.filterBar}>
+      <div style={S.filterBar} className="filter-bar">
         <div style={S.filterGroup}>
           <span style={S.filterLabel}>Estado:</span>
           <select style={S.select} value={fEstado} onChange={e => setFEstado(e.target.value)}>
@@ -314,7 +314,7 @@ export default function OrdenesPage() {
             <FormField label="Estado" options={['PENDIENTE','EN_PROCESO','FINALIZADA','ENTREGADA']} value={form.estado} onChange={set('estado')} />
             
             <SecTitle n="2">Servicios y Repuestos</SecTitle>
-            <div style={inputRow}>
+            <div style={inputRow} className="orden-fila-input-row">
               <div style={{ display:'flex', flexDirection:'column', gap:'5px' }}>
                 <span style={lbl}>Tipo</span>
                 <div style={{ display:'flex', gap:'5px' }}>
@@ -377,7 +377,7 @@ export default function OrdenesPage() {
             ) : null}
 
             <SecTitle n="3">Checklist de entrada</SecTitle>
-            <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'12px' }}>
+            <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'12px' }} className="checklist-grid">
               <button type="button" style={{ display:'none' }}></button> {/* Evitar click accidental */}
               <FormField label="Nivel combustible" options={['vacío','1/4','1/2','3/4','lleno']} value={form.cl_nivelCombustible} onChange={set('cl_nivelCombustible')} />
               <FormField label="Km de entrada" type="number" value={form.cl_kilometraje} onChange={set('cl_kilometraje')} />
