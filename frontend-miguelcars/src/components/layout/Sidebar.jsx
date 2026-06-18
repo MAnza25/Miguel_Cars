@@ -13,11 +13,11 @@ const links = [
   { to: '/roles',     icon: '🛡', label: 'Roles',       perm: 'ROLES_VER' },
 ];
 
-export default function Sidebar() {
+export default function Sidebar({ isOpen, onClose }) {
   const { can } = useAuth();
 
   return (
-    <aside style={S.sidebar}>
+    <aside style={S.sidebar} className={`app-sidebar ${isOpen ? 'is-open' : ''}`}>
       <div style={S.brand}>
         <Logo size="sm" style={{ filter: 'drop-shadow(0 2px 12px rgba(227,6,19,0.3))' }} />
         <span className="brand-tagline" style={S.tagline}>service innovation</span>
@@ -32,6 +32,7 @@ export default function Sidebar() {
             to={to}
             end={to === '/'}
             style={({ isActive }) => ({ ...S.link, ...(isActive ? S.active : {}) })}
+            onClick={onClose}
           >
             {({ isActive }) => (
               <>

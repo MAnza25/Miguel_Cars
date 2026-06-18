@@ -1,14 +1,14 @@
 export default function PageHeader({ title, onAdd, addLabel = '+ Nuevo', onSearch, searchValue = '' }) {
   return (
-    <div style={S.wrapper}>
-      <div style={S.left}>
+    <div style={S.wrapper} className="page-header-wrapper">
+      <div style={S.left} className="page-header-left">
         <div style={S.accent} />
         <h1 style={S.title}>{title}</h1>
       </div>
 
-      <div style={S.right}>
+      <div style={S.right} className="page-header-right">
         {onSearch && (
-          <div style={S.searchWrapper}>
+          <div style={S.searchWrapper} className="search-wrapper">
             <span style={S.searchIcon}>🔍</span>
             <input
               type="text"

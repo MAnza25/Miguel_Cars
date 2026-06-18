@@ -16,6 +16,7 @@ export default function Layout() {
   const { user } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
   const [pwdModal, setPwdModal] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const menuRef = useRef(null);
 
   useEffect(() => {
@@ -36,13 +37,20 @@ export default function Layout() {
 
   return (
     <ToastContext.Provider value={toastApi}>
-      <div style={S.container}>
-        <Sidebar />
-        <div style={S.right}>
-          <header style={S.topbar}>
+      <div style={S.container} className="layout-container">
+        <div
+          className={`sidebar-overlay ${sidebarOpen ? 'is-open' : ''}`}
+          onClick={() => setSidebarOpen(false)}
+        />
+        <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+        <div style={S.right} className="layout-main-content">
+          <header style={S.topbar} className="app-topbar">
+            <button className="menu-toggle-btn" onClick={() => setSidebarOpen(true)} aria-label="Abrir menú">
+              ☰
+            </button>
             <Logo size="xs" style={{ filter: 'drop-shadow(0 1px 8px rgba(227,6,19,0.25))' }} />
-            <div style={S.topbarAccent} />
-            <span style={S.topbarTitle}>Panel de Gestión</span>
+            <div style={S.topbarAccent} className="topbar-accent" />
+            <span style={S.topbarTitle} className="topbar-title">Panel de Gestión</span>
 
             <div style={S.userMenuContainer} ref={menuRef}>
               <button style={S.userBtn} onClick={() => setMenuOpen(!menuOpen)}>
@@ -70,9 +78,9 @@ export default function Layout() {
               )}
             </div>
 
-            <span style={S.topbarBrand}>Miguel Cars © 2026</span>
+            <span style={S.topbarBrand} className="topbar-brand">Miguel Cars © 2026</span>
           </header>
-          <main style={S.main}>
+          <main style={S.main} className="app-main">
             <Outlet />
           </main>
         </div>

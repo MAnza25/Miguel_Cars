@@ -71,54 +71,72 @@ function generarReportePDF(facturas, ordenes) {
   <title>Reporte de Ventas — Miguel Cars</title>
   <style>
     * { margin:0; padding:0; box-sizing:border-box; }
-    body { font-family: 'Segoe UI', sans-serif; color:#222; background:#fff; }
-    .header { background:'#0a0a0a'; color:#fff; padding:28px 36px; display:flex; justify-content:space-between; align-items:center; }
-    .brand { font-size:22px; font-weight:800; letter-spacing:1px; }
+    body { font-family: 'Montserrat', 'Segoe UI', sans-serif; color:#222; background:#fff; }
+    .header { background:#0a0a0a; color:#fff; padding:24px 36px; display:flex; justify-content:space-between; align-items:center; border-bottom:3px solid #e30613; }
+    .brand-wrap { display:flex; align-items:center; gap:16px; }
+    .logo { height:55px; filter:drop-shadow(0 2px 8px rgba(227,6,19,0.4)); }
+    .brand { font-size:24px; font-weight:900; font-style:italic; letter-spacing:1px; text-transform:uppercase; }
     .brand span { color:#e30613; }
-    .sub { color:#888; font-size:13px; margin-top:4px; }
-    .fecha { color:#555; font-size:13px; }
-    .content { padding:28px 36px; }
-    h2 { font-size:14px; color:#e30613; letter-spacing:1.5px; text-transform:uppercase; margin:24px 0 12px; border-bottom:2px solid #e30613; padding-bottom:6px; }
+    .sub { color:#999; font-size:9px; letter-spacing:2px; font-weight:700; text-transform:uppercase; margin-top:2px; }
+    .fecha { text-align:right; font-size:12px; color:#ccc; }
+    .fecha-title { font-weight:800; text-transform:uppercase; font-size:10px; letter-spacing:1.5px; color:#e30613; margin-bottom:2px; }
+    .content { padding:30px 36px; }
+    h2 { font-size:13px; color:#e30613; letter-spacing:1.5px; text-transform:uppercase; margin:28px 0 14px; border-bottom:2px solid #e30613; padding-bottom:6px; font-weight:800; }
     .cards { display:flex; gap:16px; margin-bottom:8px; }
-    .card { flex:1; background:#f8f8f8; border-radius:8px; padding:16px 20px; border-left:4px solid #e30613; }
-    .card .val { font-size:24px; font-weight:800; color:#e30613; }
-    .card .lbl { font-size:12px; color:#888; margin-top:3px; }
-    table { width:100%; border-collapse:collapse; font-size:13px; }
-    th { background:#0a0a0a; color:#fff; padding:9px 12px; text-align:left; font-size:11px; text-transform:uppercase; letter-spacing:1px; }
-    td { padding:8px 12px; border-bottom:1px solid #f0f0f0; }
-    tr:nth-child(even) td { background:#fafafa; }
-    .footer { margin-top:40px; text-align:center; color:#aaa; font-size:12px; padding:20px; border-top:1px solid #eee; }
+    .card { flex:1; background:#fafafa; border-radius:8px; padding:18px 20px; border:1px solid #eee; border-left:4px solid #e30613; box-shadow:0 2px 6px rgba(0,0,0,0.02); }
+    .card .val { font-size:26px; font-weight:900; color:#0a0a0a; }
+    .card .lbl { font-size:11px; color:#888; text-transform:uppercase; letter-spacing:0.8px; font-weight:700; margin-top:4px; }
+    table { width:100%; border-collapse:collapse; font-size:13px; margin-top:8px; }
+    th { background:#0a0a0a; color:#fff; padding:10px 14px; text-align:left; font-size:11px; text-transform:uppercase; letter-spacing:1px; font-weight:700; border-bottom:2px solid #e30613; }
+    td { padding:10px 14px; border-bottom:1px solid #eee; color:#444; }
+    tr:nth-child(even) td { background:#fcfcfc; }
+    .footer { margin-top:50px; text-align:center; color:#999; font-size:10px; padding:20px; border-top:1px solid #eee; text-transform:uppercase; letter-spacing:1.5px; font-weight:600; }
   </style>
 </head>
 <body>
   <div class="header">
-    <div>
-      <div class="brand">⚙ MIGUEL <span>CARS</span></div>
-      <div class="sub">Taller Mecánico — Reporte de Ventas</div>
+    <div class="brand-wrap">
+      <img src="/logo.png" class="logo" alt="Logo" />
+      <div>
+        <div class="brand">⚙ MIGUEL <span>CARS</span></div>
+        <div class="sub">service innovation</div>
+      </div>
     </div>
-    <div class="fecha">Generado: ${fecha}</div>
+    <div class="fecha">
+      <div class="fecha-title">Reporte de Ventas</div>
+      <div>Generado: ${fecha}</div>
+    </div>
   </div>
   <div class="content">
     <div class="cards">
-      <div class="card"><div class="val">${facturas.length}</div><div class="lbl">Facturas emitidas</div></div>
-      <div class="card"><div class="val">${ordenes.length}</div><div class="lbl">Órdenes totales</div></div>
-      <div class="card"><div class="val" style="color:#22c55e">$${total.toLocaleString('es-CO',{minimumFractionDigits:2})}</div><div class="lbl">Ingresos totales</div></div>
+      <div class="card">
+        <div class="val">${facturas.length}</div>
+        <div class="lbl">Facturas emitidas</div>
+      </div>
+      <div class="card">
+        <div class="val">${ordenes.length}</div>
+        <div class="lbl">Órdenes totales</div>
+      </div>
+      <div class="card">
+        <div class="val" style="color:#22c55e">$${total.toLocaleString('es-CO',{minimumFractionDigits:2})}</div>
+        <div class="lbl">Ingresos totales</div>
+      </div>
     </div>
 
-    <h2>Ventas por mes</h2>
+    <h2>Resumen de Ventas Mensuales</h2>
     <table>
       <thead><tr><th>Período</th><th style="text-align:right">Total</th></tr></thead>
       <tbody>${filas || '<tr><td colspan="2" style="text-align:center;color:#aaa">Sin datos</td></tr>'}</tbody>
     </table>
 
-    <h2>Detalle de facturas</h2>
+    <h2>Detalle de Facturas Recientes</h2>
     <table>
       <thead>
-        <tr><th>N° Factura</th><th>Fecha</th><th>Orden</th><th style="text-align:right">Subtotal</th><th style="text-align:right">Descuento</th><th style="text-align:right">Total</th></tr>
+        <tr><th>N° Factura</th><th>Fecha</th><th>Orden de Servicio</th><th style="text-align:right">Subtotal</th><th style="text-align:right">Descuento</th><th style="text-align:right">Total Cobrado</th></tr>
       </thead>
       <tbody>${factFilas || '<tr><td colspan="6" style="text-align:center;color:#aaa">Sin facturas</td></tr>'}</tbody>
     </table>
-    <div class="footer">Miguel Cars © ${new Date().getFullYear()} — Documento generado automáticamente</div>
+    <div class="footer">Miguel Cars © ${new Date().getFullYear()} — Sistema de Gestión del Taller</div>
   </div>
 </body>
 </html>`;
@@ -201,7 +219,7 @@ export default function Dashboard() {
       </div>
 
       {/* ── Acceso rápido (compacto, top) ─────────────── */}
-      <div style={{ display:'flex', gap:'10px', flexWrap:'wrap', alignItems:'center' }}>
+      <div className="dashboard-quick-actions" style={{ gap:'10px' }}>
         {[
           ['/clientes',  '👥', 'Clientes'],
           ['/vehiculos', '🚗', 'Vehículos'],
@@ -209,18 +227,18 @@ export default function Dashboard() {
           ['/citas',     '📅', 'Citas'],
           ['/facturas',  '🧾', 'Facturas'],
         ].map(([href,icon,label]) => (
-          <a key={href} href={href} style={quickLink}>
+          <a key={href} href={href} style={quickLink} className="dashboard-quick-link">
             <span>{icon}</span><span>{label}</span>
           </a>
         ))}
         {/* Reporte PDF */}
-        <button onClick={() => generarReportePDF(facturas, ordenes)} style={reportBtn}>
+        <button onClick={() => generarReportePDF(facturas, ordenes)} style={reportBtn} className="report-btn">
           📄 Reporte de Ventas PDF
         </button>
       </div>
 
       {/* ── Stats cards ───────────────────────────────── */}
-      <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:'14px' }}>
+      <div className="dashboard-stats-grid" style={{ gap:'14px' }}>
         {[
           ['Clientes',    stats.clientes,  RED,    '👥'],
           ['Vehículos',   stats.vehiculos, YELLOW, '🚗'],
@@ -238,7 +256,7 @@ export default function Dashboard() {
       </div>
 
       {/* ── Gráficas ──────────────────────────────────── */}
-      <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'16px' }}>
+      <div className="dashboard-charts-grid" style={{ gap:'16px' }}>
 
         {/* 1. Ventas mensuales */}
         <ChartCard title="📈 Ventas mensuales" subtitle={`Total: $${totalVentas.toLocaleString('es-CO',{minimumFractionDigits:2})}`}>
